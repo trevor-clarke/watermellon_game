@@ -146,11 +146,27 @@ function getCircularBoundingBox(centerX, centerY, radius) {
   // approximate circle with 25 points
 
   let boundingBox = [];
-  for (let i = 0; i < 25; i++) {
-    let angle = (i / 25) * Math.PI * 2;
+  for (let i = 0; i < 15; i++) {
+    let angle = (i / 15) * Math.PI * 2;
     let x = centerX + radius * Math.cos(angle);
     let y = centerY + radius * Math.sin(angle);
     boundingBox.push({ x, y });
   }
   return boundingBox;
+}
+
+function drawPolygon(polygon) {
+  box = polygon;
+  push();
+  strokeWeight(1);
+  stroke("red");
+  for (let i = 0; i < box.length; i++) {
+    line(
+      box[i].x,
+      box[i].y,
+      box[(i + 1) % box.length].x,
+      box[(i + 1) % box.length].y
+    );
+  }
+  pop();
 }

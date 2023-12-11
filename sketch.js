@@ -1,7 +1,7 @@
 entities = [];
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(600, 600);
 
   entities.push(new Boundary(width / 2, height, width, 50));
   entities.push(new Boundary(0, height / 2, 50, height));
@@ -36,24 +36,12 @@ class Boundary extends Entity {
   }
 
   get boundingBox() {
-    return [
-      {
-        x: this.position.x - this.width / 2,
-        y: this.position.y - this.height / 2,
-      },
-      {
-        x: this.position.x + this.width,
-        y: this.position.y - this.height / 2,
-      },
-      {
-        x: this.position.x + this.width,
-        y: this.position.y + this.height / 2,
-      },
-      {
-        x: this.position.x - this.width / 2,
-        y: this.position.y + this.height / 2,
-      },
-    ];
+    return getRectangularBoundingBox(
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
   }
 
   get mass() {
