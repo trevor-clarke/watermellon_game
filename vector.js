@@ -31,6 +31,20 @@ class Vector {
     this.components[2] = value;
   }
 
+  max(max) {
+    if (this.magnitude() > max) {
+      return this.normalize().multiply(max);
+    }
+    return this;
+  }
+
+  min(min) {
+    if (this.magnitude() < min) {
+      return new Vector(0, 0);
+    }
+    return this;
+  }
+
   add(...operands) {
     return this.operate("add", ...operands);
   }
@@ -83,12 +97,26 @@ class Vector {
   }
 
   normalize() {
-    let magnitude = this.magnitude();
-    if (magnitude === 0) {
-      magnitude = 0.25;
-      // throw new Error("Cannot normalize a vector with magnitude 0");
+    const mag = this.magnitude();
+
+    // Check if magnitude is zero, NaN, or Infinity
+    if (!mag || isNaN(mag) || !isFinite(mag)) {
+      return new Vector(0, 0);
     }
-    return this.divide(magnitude);
+
+    let normal = this.divide(mag);
+
+    // Check if normal vector components are valid numbers
+    if (
+      isNaN(normal.x) ||
+      isNaN(normal.y) ||
+      !isFinite(normal.x) ||
+      !isFinite(normal.y)
+    ) {
+      return new Vector(0, 0);
+    }
+
+    return normal;
   }
 
   magnitude() {

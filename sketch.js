@@ -1,52 +1,49 @@
-entities = [];
+boundaries = [];
+fruit = [];
+arrows = [];
+
+function addArrow(color, location, vector) {
+  arrows.push([color, location, vector]);
+}
+
+function drawArrow(color, location, vector) {
+  // draw a line and a triangle to represent a vector
+  push();
+  strokeWeight(1);
+  stroke(color);
+  fill(color);
+  line(location.x, location.y, vector.x, vector.y);
+  translate(vector.x, vector.y);
+  circle(0, 0, 5);
+  pop();
+}
 
 function setup() {
   createCanvas(600, 600);
 
-  entities.push(new Boundary(width / 2, height, width, 50));
-  entities.push(new Boundary(0, height / 2, 50, height));
-  entities.push(new Boundary(width, height / 2, 50, height));
+  let left = new Boundary(
+    new Vector(0, height / 2),
+    new Vector(width / 2, height / 1.5),
+    new Vector(width / 2, height),
+    new Vector(0, height)
+  );
+
+  boundaries.push(left);
+
+  fruit.push(new Apple(100, 100));
 }
 
 function draw() {
-  background(220);
+  background(230);
 
-  entities.forEach((entity) => {
-    entity.update(entities);
-    entity.draw();
+  boundaries.forEach((b) => b.draw());
+  fruit.forEach((f) => {
+    f.draw();
+    f.update(boundaries, fruit);
   });
+  arrows.forEach((a) => drawArrow(a[0], a[1], a[2]));
 }
 
 function mousePressed() {
-  entities.push(Fruit.random(mouseX, mouseY));
-}
-
-class Boundary extends Entity {
-  //defined at its center point
-  constructor(x, y, width, height) {
-    super(x, y);
-    this.width = width;
-    this.height = height;
-  }
-
-  draw() {
-    fill(0);
-    rectMode(CENTER);
-    rect(this.position.x, this.position.y, this.width, this.height);
-  }
-
-  get boundingBox() {
-    return getRectangularBoundingBox(
-      this.position.x,
-      this.position.y,
-      this.width,
-      this.height
-    );
-  }
-
-  get mass() {
-    return 9999999999;
-  }
-
-  update() {}
+  fruit.push(Fruit.random(mouseX, mouseY));
 }

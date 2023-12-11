@@ -1,46 +1,3 @@
-class Orange extends Fruit {
-  constructor(x, y) {
-    super(x, y);
-    this.color = "orange";
-    this.size = 30;
-  }
-
-  draw() {
-    super.draw();
-    ellipse(this.position.x, this.position.y, this.size * 2);
-    if (this.boundingBox) drawPolygon(this.boundingBox);
-  }
-
-  get boundingBox() {
-    return getCircularBoundingBox(this.position.x, this.position.y, this.size);
-  }
-}
-
-class Blueberry extends Fruit {
-  constructor(x, y) {
-    super(x, y);
-    this.color = "blue";
-    this.size = 40;
-    this.shape = "square";
-  }
-
-  draw() {
-    super.draw();
-    rectMode(CENTER);
-    rect(this.position.x, this.position.y, this.size, this.size);
-    if (this.boundingBox) drawPolygon(this.boundingBox);
-  }
-
-  get boundingBox() {
-    return getRectangularBoundingBox(
-      this.position.x,
-      this.position.y,
-      this.size,
-      this.size
-    );
-  }
-}
-
 class Apple extends Fruit {
   constructor(x, y) {
     super(x, y);
@@ -49,9 +6,12 @@ class Apple extends Fruit {
   }
 
   draw() {
-    super.draw();
-    ellipse(this.position.x, this.position.y, this.size * 2);
-    if (this.boundingBox) drawPolygon(this.boundingBox);
+    fill("red");
+    noStroke();
+    beginShape();
+    this.boundingBox.forEach((p) => vertex(p.x, p.y));
+
+    endShape(CLOSE);
   }
 
   get boundingBox() {
@@ -59,4 +19,4 @@ class Apple extends Fruit {
   }
 }
 
-Fruit.types = [Blueberry, Apple, Orange];
+Fruit.types = [Apple];

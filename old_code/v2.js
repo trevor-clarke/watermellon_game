@@ -27,3 +27,41 @@
 // // if (this.position.y > this.floorY) {
 // //   this.position.y = this.floorY;
 // // }
+
+entities
+  .filter((e) => e instanceof Fruit)
+  .forEach((fruit) => {
+    if (fruit === this) return;
+    if (!polygonsCollide(nextboundingBox, fruit.boundingBox)) return;
+
+    let overlap = calculateOverlap(nextboundingBox, fruit.boundingBox);
+    this.position = this.position.subtract(overlap);
+
+    const collisionNormal = overlap.normalize();
+
+    const relativeVelocity = delta.subtract(fruit.velocity);
+    const velocityAlongNormal = relativeVelocity.dot(collisionNormal);
+    if (velocityAlongNormal > 0) return;
+
+    const impulseScalar =
+      (-(1 + Fruit.restitution) * velocityAlongNormal) /
+      (1 / this.mass + 1 / fruit.mass);
+
+    const impulse = collisionNormal.multiply(impulseScalar);
+
+    delta = delta.add(impulse.divide(this.mass)).max(this.terminalVelocity / 2);
+
+    fruit.velocity = fruit.velocity
+      .add(impulse.divide(fruit.mass))
+      .max(fruit.terminalVelocity / 2);
+  });
+
+const nextboundingBox = this.boundingBox.map((point) => {
+  let a = new Vector(point.x, point.y).add(delta);
+  return { x: a.x, y: a.y };
+});
+// document.getElementById("output").innerHTML = JSON.stringify(
+//   entities.map((e) => e.velocity.magnitude().toFixed(2)),
+//   null,
+//   2
+// );
