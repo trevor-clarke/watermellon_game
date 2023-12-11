@@ -110,8 +110,8 @@ function getCircularBoundingBox(centerX, centerY, radius) {
   // approximate circle with 25 points
 
   let boundingBox = [];
-  for (let i = 0; i < 15; i++) {
-    let angle = (i / 15) * Math.PI * 2;
+  for (let i = 0; i < 20; i++) {
+    let angle = (i / 20) * Math.PI * 2;
     let x = centerX + radius * Math.cos(angle);
     let y = centerY + radius * Math.sin(angle);
     boundingBox.push(new Vector(x, y));

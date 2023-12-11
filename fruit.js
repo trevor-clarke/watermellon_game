@@ -1,5 +1,5 @@
 class Fruit extends Entity {
-  static G = new Vector(0, 5 / 10); // Or any value less than the original
+  static G = new Vector(0, 1.1); // Or any value less than the original
 
   static random(x, y) {
     const type = Fruit.types[Math.floor(Math.random() * Fruit.types.length)];
@@ -10,36 +10,23 @@ class Fruit extends Entity {
     super(x, y);
   }
 
-  // const velocityAlongNormal = this.velocity.dot(normal);
-  // if (velocityAlongNormal > 0) return;
-
-  // const restitution = Fruit.restitution;
-  // const impulseScalar =
-  //   (-(1 + restitution) * velocityAlongNormal) / this.mass;
-  // const impulse = normal.multiply(impulseScalar);
-
-  // this.velocity = this.velocity.add(impulse);
-  // this.velocity = this.velocity.multiply(1 - Fruit.damping);
-
   update(boundaries, fruit) {
-    // addArrow("blue", this.position, this.position);
-    // addArrow("green", this.position, this.position.add(this.velocity));
-
     this.velocity = this.velocity.add(Fruit.G);
-    this.position = this.position.add(this.velocity);
 
     boundaries.forEach((boundary) => {
       const overlap = calculateOverlap(this.boundingBox, boundary.points);
       if (overlap.magnitude() < 1) return;
       this.position = this.position.subtract(overlap);
-
       const normal = overlap.normalize();
-      addArrow("red", this.position, this.position.add(normal.multiply(10)));
 
-      // we must "bounce" the fruit off the boundary
-      const reflected = reflect(this.velocity, normal);
-      this.velocity = reflected.multiply(0.9);
+      this.velocity = reflect(this.velocity, normal).multiply(0.9);
+      arrows.push(
+        new Arrow("red", this.position, this.position.add(normal.multiply(10)))
+      );
     });
+
+    this.velocity = this.velocity.min(1).max(this.terminalVelocity);
+    this.position = this.position.add(this.velocity);
   }
 
   draw() {
@@ -52,6 +39,6 @@ class Fruit extends Entity {
   }
 
   get terminalVelocity() {
-    return 7;
+    this.mass * 10;
   }
 }
