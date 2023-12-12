@@ -115,6 +115,14 @@ class Vector {
     return this;
   }
 
+  negate() {
+    return this.multiply(-1);
+  }
+
+  negate_() {
+    return this.multiply_(-1);
+  }
+
   equals(other) {
     if (other.components.length !== this.components.length) {
       return false;

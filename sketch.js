@@ -28,27 +28,32 @@ function mouseIsPressed() {
 }
 
 function createBoundaries() {
-  a = [
-    new Vector(50, 400),
-    new Vector(100, 400),
-    new Vector(100, 550),
-    new Vector(50, 550),
-  ].reverse();
-  b = [
-    new Vector(200, 400),
-    new Vector(250, 400),
-    new Vector(250, 550),
-    new Vector(200, 550),
-  ];
-  c = [
-    new Vector(50, 500),
-    new Vector(200, 500),
-    new Vector(200, 550),
-    new Vector(50, 550),
-  ].reverse();
-  boundaries.push(new Boundary(...a));
-  boundaries.push(new Boundary(...b));
-  boundaries.push(new Boundary(...c));
+  boundaries.push(
+    new Boundary(
+      new Vector(50, 400),
+      new Vector(100, 400),
+      new Vector(100, 550),
+      new Vector(50, 550)
+    )
+  );
+
+  boundaries.push(
+    new Boundary(
+      new Vector(200, 400),
+      new Vector(250, 400),
+      new Vector(250, 550),
+      new Vector(200, 550)
+    )
+  );
+
+  boundaries.push(
+    new Boundary(
+      new Vector(50, 500),
+      new Vector(200, 500),
+      new Vector(200, 550),
+      new Vector(50, 550)
+    )
+  );
 }
 
 function drawBoundaries() {

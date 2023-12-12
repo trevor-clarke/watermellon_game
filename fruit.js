@@ -10,32 +10,25 @@ class Fruit extends Entity {
     this.position.add_(this.velocity);
     this.wrapAround();
 
+    this.velocity.add_(Fruit.G);
     let [isHit, overlap] = this.boundaryOverlap(boundaries);
-    // round to number of digits
 
     if (isHit) {
-      const ah = this.boundaryOverlapAsArrayOfOverlaps(boundaries).map((o) => [
-        o.x.toFixed(2),
-        o.y.toFixed(2),
-      ]);
-      text(JSON.stringify(), this.x + this.size, this.y);
       this.position.subtract_(overlap);
-
-      new Arrow(
-        "blue",
-        this.position,
-        this.position.subtract(overlap.multiply(10))
-      ).draw();
+      this.arrow(overlap.multiply(-10), "purple").draw();
       this.velocity = reflect(
-        this.velocity.multiply_(0.99),
+        this.velocity.multiply_(0.9),
         overlap.normalize()
       );
-      this.reduceVelocity(new Vector(0.1, 0.3));
+      this.reduceVelocity(new Vector(0.1, 0.4));
     } else {
-      this.velocity.add_(Fruit.G);
     }
 
     this.velocity.max_(this.terminalVelocity);
+  }
+
+  arrow(endpoint, color) {
+    return new Arrow(color, this.position, this.position.add(endpoint));
   }
 
   boundaryOverlap(boundaries) {
