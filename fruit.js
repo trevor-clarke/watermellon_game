@@ -7,24 +7,24 @@ class Fruit extends Entity {
   }
 
   update(boundaries, fruit) {
-    this.position = this.position.add(this.velocity);
+    this.position.add_(this.velocity);
     this.wrapAround();
 
     let { hit, overlap } = this.boundaryOverlap(boundaries);
 
-    this.position = this.position.add(overlap);
+    this.position.add_(overlap);
 
     this.velocity = hit
-      ? reflect(this.velocity.multiply(0.9), overlap.normalize())
-      : this.velocity.add(Fruit.G);
+      ? reflect(this.velocity.multiply_(0.9), overlap.normalize())
+      : this.velocity.add_(Fruit.G);
 
-    this.velocity = this.velocity.max(this.terminalVelocity);
+    this.velocity.max_(this.terminalVelocity);
   }
 
   boundaryOverlap(boundaries) {
     const overlap = boundaries.reduce(
       (acc, boundary) =>
-        acc.add(calculateOverlap(this.boundingBox, boundary.points)),
+        acc.add_(calculateOverlap(this.boundingBox, boundary.points)),
       new Vector(0, 0)
     );
     const hit = overlap.x !== 0 || overlap.y !== 0;

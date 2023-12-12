@@ -1,40 +1,104 @@
 class Vector {
   constructor(...components) {
     this.components = components.length > 0 ? components : [];
+    ["x", "y", "z"].forEach((name, index) => {
+      Object.defineProperty(this, name, {
+        get: function () {
+          return this.components[index];
+        },
+        set: function (value) {
+          this.components[index] = value;
+        },
+      });
+    });
   }
 
   get dup() {
     return new Vector(...this.components);
   }
 
-  get x() {
-    return this.components[0];
+  operate(operation, inPlace, ...operands) {
+    const operations = {
+      add: (a, b) => a + b,
+      subtract: (a, b) => a - b,
+      multiply: (a, b) => a * b,
+      divide: (a, b) => a / b,
+    };
+
+    if (!operations.hasOwnProperty(operation)) {
+      throw new Error("Invalid vector operation");
+    }
+
+    let operandComponents;
+    if (operands.length == 1 && operands[0] instanceof Vector) {
+      if (operands[0].components.length !== this.components.length) {
+        throw new Error("Vectors must be of the same dimension");
+      }
+      operandComponents = operands[0].components;
+    } else if (operands.length === this.components.length) {
+      operandComponents = operands;
+    } else if (operands.length == 1 && typeof operands[0] === "number") {
+      operandComponents = new Array(this.components.length).fill(operands[0]);
+    } else {
+      throw new Error("Invalid operand type or dimension");
+    }
+
+    const result = new Vector(
+      ...this.components.map((component, index) =>
+        operations[operation](component, operandComponents[index])
+      )
+    );
+
+    if (inPlace) {
+      this.components = result.components;
+      return this;
+    } else {
+      return result;
+    }
   }
 
-  set x(value) {
-    this.components[0] = value;
+  add(...operands) {
+    return this.operate("add", false, ...operands);
   }
 
-  get y() {
-    return this.components[1];
+  add_(...operands) {
+    return this.operate("add", true, ...operands);
   }
 
-  set y(value) {
-    this.components[1] = value;
+  subtract(...operands) {
+    return this.operate("subtract", false, ...operands);
   }
 
-  get z() {
-    return this.components[2];
+  subtract_(...operands) {
+    return this.operate("subtract", true, ...operands);
   }
 
-  set z(value) {
-    this.components[2] = value;
+  multiply(...operands) {
+    return this.operate("multiply", false, ...operands);
+  }
+
+  multiply_(...operands) {
+    return this.operate("multiply", true, ...operands);
+  }
+
+  divide(...operands) {
+    return this.operate("divide", false, ...operands);
+  }
+
+  divide_(...operands) {
+    return this.operate("divide", true, ...operands);
   }
 
   max(max) {
     if (this.magnitude() > max) {
       return this.normalize().multiply(max);
     }
+    return this;
+  }
+
+  max_(max) {
+    let result = this.max(max);
+    this.components = result.components;
     return this;
   }
 
@@ -45,55 +109,10 @@ class Vector {
     return this;
   }
 
-  add(...operands) {
-    return this.operate("add", ...operands);
-  }
-
-  subtract(...operands) {
-    return this.operate("subtract", ...operands);
-  }
-
-  multiply(...operands) {
-    return this.operate("multiply", ...operands);
-  }
-
-  divide(...operands) {
-    return this.operate("divide", ...operands);
-  }
-
-  operate(operation, ...operand) {
-    const validOperations = ["add", "subtract", "multiply", "divide"];
-
-    if (!validOperations.includes(operation)) {
-      throw new Error("Invalid vector operation");
-    }
-    // debugger;
-    let operandComponents;
-
-    if (operand.length == 1 && operand[0] instanceof Vector) {
-      if (operand[0].components.length !== this.components.length) {
-        throw new Error("Vectors must be of the same dimension");
-      }
-      operandComponents = operand[0].components;
-    } else if (operand.length === this.components.length) {
-      operandComponents = operand;
-    } else if (operand.length == 1 && typeof operand[0] === "number") {
-      operandComponents = new Array(this.components.length).fill(operand[0]);
-    } else {
-      throw new Error("Invalid operand type or dimension");
-    }
-
-    return new Vector(
-      ...this.components.map((component, index) => {
-        if (operation === "add") return component + operandComponents[index];
-        if (operation === "subtract")
-          return component - operandComponents[index];
-        if (operation === "multiply")
-          return component * operandComponents[index];
-        if (operation === "divide") return component / operandComponents[index];
-        throw new Error("Invalid vector operation");
-      })
-    );
+  min_(min) {
+    let result = this.min(min);
+    this.components = result.components;
+    return this;
   }
 
   equals(other) {
@@ -113,14 +132,12 @@ class Vector {
   normalize() {
     const mag = this.magnitude();
 
-    // Check if magnitude is zero, NaN, or Infinity
     if (!mag || isNaN(mag) || !isFinite(mag)) {
       return new Vector(0, 0);
     }
 
     let normal = this.divide(mag);
 
-    // Check if normal vector components are valid numbers
     if (
       isNaN(normal.x) ||
       isNaN(normal.y) ||
