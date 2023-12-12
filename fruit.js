@@ -1,5 +1,5 @@
 class Fruit extends Entity {
-  static G = new Vector(0, 0.98);
+  static G = new Vector(0, 0.5);
 
   constructor(x, y) {
     super(x, y);
@@ -10,36 +10,30 @@ class Fruit extends Entity {
     this.position.add_(this.velocity);
     this.wrapAround();
 
-    //GRAVITY FIRST
-    this.velocity.add_(Fruit.G);
-
-    //BOUNDARIES SECOND
     let [isHit, overlap] = this.boundaryOverlap(boundaries);
 
     if (isHit) {
       this.position.subtract_(overlap);
-      this.arrow(overlap.multiply(-10), "purple").draw();
       this.velocity = reflect(
-        this.velocity.multiply_(0.25),
+        this.velocity.multiply_(0.7),
         overlap.normalize()
       );
-      this.reduceVelocity(new Vector(0.2, 0.6));
+      this.reduceVelocity(new Vector(0.1, 0.1));
     }
 
-    //FRUIT THIRD
     const fruitMinusThis = fruit.filter((f) => f !== this);
     let [isHitFruit, overlapFruit] = this.boundaryOverlap(fruitMinusThis);
 
     if (isHitFruit) {
-      this.position.subtract_(overlapFruit);
-      this.arrow(overlapFruit.multiply(-10), "purple").draw();
+      this.position.subtract_(overlapFruit.divide(2));
       this.velocity = reflect(
-        this.velocity.multiply_(0.5),
+        this.velocity.multiply_(0.65),
         overlapFruit.normalize()
       );
-      this.reduceVelocity(new Vector(0.2, 0.6));
+      this.reduceVelocity(new Vector(0.05, 0.05));
     }
 
+    this.velocity.add_(Fruit.G);
     this.velocity.max_(this.terminalVelocity);
   }
 
