@@ -7,6 +7,7 @@ function setup() {
   createCanvas(300, 600);
   createBoundaries();
   fruit.push(FruitFactory.random(150, 100));
+  // fruit.push(FruitFactory.random(200, 100));
 }
 
 function draw() {
@@ -16,42 +17,57 @@ function draw() {
   arrows.forEach((a) => a.draw());
   if (mouseIsPressed) {
     mouseVelocity = new Vector(mouseX, mouseY).subtract(lastMouse);
-    // fruit[0].position = new Vector(mouseX, mouseY);
-    // fruit[0].velocity = mouseVelocity.divide(2);
+    fruit[0].position = new Vector(mouseX, mouseY);
+    fruit[0].velocity = mouseVelocity.divide(2);
   }
   ghosts.forEach((g) => g.draw());
   lastMouse = new Vector(mouseX, mouseY);
 }
 
-function mousePressed() {
-  fruit.push(FruitFactory.random(mouseX, mouseY));
-}
+// function mousePressed() {
+//   fruit.push(FruitFactory.random(mouseX, mouseY));
+//   fruit[fruit.length - 1].velocity = mouseVelocity;
+// }
 
 function createBoundaries() {
+  // boundaries.push(
+  //   new Boundary(
+  //     new Vector(50, 400),
+  //     new Vector(100, 400),
+  //     new Vector(100, 550),
+  //     new Vector(50, 550)
+  //   )
+  // );
+
+  // boundaries.push(
+  //   new Boundary(
+  //     new Vector(200, 400),
+  //     new Vector(250, 400),
+  //     new Vector(250, 550),
+  //     new Vector(200, 550)
+  //   )
+  // );
+
+  // boundaries.push(
+  //   new Boundary(
+  //     new Vector(50, 500),
+  //     new Vector(200, 500),
+  //     new Vector(200, 550),
+  //     new Vector(50, 550)
+  //   )
+  // );
+
+  // make a cool structure
+
+  // boundaries.push(new Boundary(...getCircularBoundingBox(150, 500, 50)));
+
+  //ramp
   boundaries.push(
     new Boundary(
+      new Vector(0, 400),
       new Vector(50, 400),
-      new Vector(100, 400),
-      new Vector(100, 550),
-      new Vector(50, 550)
-    )
-  );
-
-  boundaries.push(
-    new Boundary(
-      new Vector(200, 400),
-      new Vector(250, 400),
       new Vector(250, 550),
-      new Vector(200, 550)
-    )
-  );
-
-  boundaries.push(
-    new Boundary(
-      new Vector(50, 500),
-      new Vector(200, 500),
-      new Vector(200, 550),
-      new Vector(50, 550)
+      new Vector(0, 550)
     )
   );
 }

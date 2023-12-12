@@ -113,3 +113,22 @@ fruit.forEach((otherFruit) => {
 // );
 
 //create a little box with no top
+
+for (let i = 0; i < fruit.length; i++) {
+  const f = fruit[i];
+  if (f === this) continue;
+  const [isHit, overlap] = this.fruitOverlap([f.points]);
+  if (!isHit) continue;
+
+  this.position.subtract_(overlap.divide(2));
+  f.position.add_(overlap.divide(2));
+
+  const { v1, v2 } = perfectlyElasticCollision(
+    this.velocity,
+    this.mass,
+    f.velocity,
+    f.mass
+  );
+  this.velocity = v1;
+  f.velocity = v2;
+}

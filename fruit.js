@@ -15,22 +15,10 @@ class Fruit extends Entity {
     if (isHit) {
       this.position.subtract_(overlap);
       this.velocity = reflect(
-        this.velocity.multiply_(0.7),
+        this.velocity.multiply_(0.5),
         overlap.normalize()
       );
       this.reduceVelocity(new Vector(0.1, 0.1));
-    }
-
-    const fruitMinusThis = fruit.filter((f) => f !== this);
-    let [isHitFruit, overlapFruit] = this.boundaryOverlap(fruitMinusThis);
-
-    if (isHitFruit) {
-      this.position.subtract_(overlapFruit.divide(2));
-      this.velocity = reflect(
-        this.velocity.multiply_(0.65),
-        overlapFruit.normalize()
-      );
-      this.reduceVelocity(new Vector(0.05, 0.05));
     }
 
     this.velocity.add_(Fruit.G);
@@ -49,6 +37,15 @@ class Fruit extends Entity {
     const overlap = boundaries.reduce(
       (acc, boundary) =>
         acc.add_(calculateOverlap(this.boundingBox, boundary.points)),
+      new Vector(0, 0)
+    );
+    const hit = overlap.x !== 0 || overlap.y !== 0;
+    return [hit, overlap];
+  }
+
+  fruitOverlap(boundaries) {
+    const overlap = boundaries.reduce(
+      (acc, boundary) => acc.add_(calculateOverlap(this.boundingBox, boundary)),
       new Vector(0, 0)
     );
     const hit = overlap.x !== 0 || overlap.y !== 0;
@@ -88,9 +85,26 @@ class Fruit extends Entity {
     this.drawStrategy.draw(this);
   }
   get mass() {
-    return this.size * this.size;
+    return this.size * this.size * Math.PI;
   }
   get terminalVelocity() {
     return this.mass;
   }
+}
+
+function perfectlyElasticCollision(v1, m1, v2, m2) {
+  // Calculate the new velocity of the first object after the collision
+  let v1f = v1
+    .multiply(m1 - m2)
+    .add(v2.multiply(2 * m2))
+    .divide(m1 + m2);
+
+  // Calculate the new velocity of the second object after the collision
+  let v2f = v2
+    .multiply(m2 - m1)
+    .add(v1.multiply(2 * m1))
+    .divide(m1 + m2);
+
+  // Return the new velocities
+  return { v1: v1f, v2: v2f };
 }
