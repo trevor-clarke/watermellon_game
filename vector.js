@@ -96,6 +96,20 @@ class Vector {
     );
   }
 
+  equals(other) {
+    if (other.components.length !== this.components.length) {
+      return false;
+    }
+
+    for (let i = 0; i < this.components.length; i++) {
+      if (this.components[i] !== other.components[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   normalize() {
     const mag = this.magnitude();
 

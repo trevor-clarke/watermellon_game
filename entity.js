@@ -38,6 +38,18 @@ function projectPolygon(axis, polygon) {
   return { min, max };
 }
 
+function getCenterOfEachEdge(polygon) {
+  let centers = [];
+  for (let i = 0; i < polygon.length; i++) {
+    let p1 = polygon[i];
+    let p2 = polygon[(i + 1) % polygon.length];
+    let center = new Vector((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+    centers.push(center);
+  }
+
+  return centers;
+}
+
 function getAxes(polygon) {
   let axes = [];
   for (let i = 0; i < polygon.length; i++) {

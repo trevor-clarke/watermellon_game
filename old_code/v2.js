@@ -65,3 +65,20 @@ const nextboundingBox = this.boundingBox.map((point) => {
 //   null,
 //   2
 // );
+
+fruit.forEach((otherFruit) => {
+  if (otherFruit === this) return;
+  const overlap = calculateOverlap(this.boundingBox, otherFruit.boundingBox);
+  if (overlap.magnitude() > 0.1) {
+    this.position = this.position.add(overlap);
+    const { v1Final, v2Final } = calculateFinalVelocities(
+      this.mass,
+      otherFruit.mass,
+      this.velocity,
+      otherFruit.velocity,
+      0.2
+    );
+    this.velocity = v1Final;
+    otherFruit.velocity = v2Final;
+  }
+});
