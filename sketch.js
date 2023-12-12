@@ -3,31 +3,22 @@ fruit = [];
 arrows = [];
 
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(300, 600);
 
   boundaries.push(
     new Boundary(
-      new Vector(0, height / 2),
-      new Vector(width / 2, height / 1.5),
-      new Vector(width / 2, height),
-      new Vector(0, height)
+      new Vector(0, height / 2), // Top-left corner
+      new Vector(0, height / 1.5), // Bottom-left corner
+      new Vector(width / 2, height / 1.5) // Top-right corner (or mid-right, depending on your shape)
     )
   );
+  //define a triangle mirrored to it
   boundaries.push(
     new Boundary(
-      new Vector(width - 20, 0),
-      new Vector(width - 20, height),
-      new Vector(width, height),
-      new Vector(width, 0)
-    )
-  );
+      new Vector(width / 2, height / 1.5), // Top-left corner (or mid-left, depending on your shape)
+      new Vector(width, height / 1.5), // Bottom-right corner
 
-  boundaries.push(
-    new Boundary(
-      new Vector(width / 2 - 20, height / 2 - 20),
-      new Vector(width / 2 - 20, height / 2 + 100),
-      new Vector(width / 2 + 100, height / 2 + 100),
-      new Vector(width / 2 + 100, height / 2 - 20)
+      new Vector(width, height / 2) // Top-right corner
     )
   );
 
@@ -41,6 +32,17 @@ function draw() {
   fruit.forEach((f) => {
     f.draw();
     f.update(boundaries, fruit);
+    // anything that goes off the bottom, put to the top,
+    // anything that goes off the sizes, wrap around
+    if (f.position.y > height) {
+      f.position.y = -f.size;
+    }
+    if (f.position.x > width) {
+      f.position.x = 0;
+    }
+    if (f.position.x < 0) {
+      f.position.x = width;
+    }
   });
   console.log(fruit.map((f) => f.velocity.magnitude()));
   arrows.forEach((a) => a.draw());
