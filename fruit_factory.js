@@ -28,21 +28,21 @@ class AppleDrawStrategy extends DrawStrategy {
     points.forEach((p) => vertex(p.x, p.y));
     endShape(CLOSE);
 
-    const axes = getAxes(points);
-    const centers = getCenterOfEachEdge(points);
-    axes.forEach((axis, i) => {
-      const center = centers[i];
-      const arrow = new Arrow("blue", center, center.add(axis.multiply(10)));
-      arrow.draw();
-    });
+    // const axes = getAxes(points);
+    // const centers = getCenterOfEachEdge(points);
+    // axes.forEach((axis, i) => {
+    //   const center = centers[i];
+    //   const arrow = new Arrow("blue", center, center.add(axis.multiply(10)));
+    //   arrow.draw();
+    // });
 
-    // draw the velocity
-    const velocity = fruit.velocity;
-    new Arrow(
-      "green",
-      fruit.position,
-      fruit.position.add(velocity.multiply(10))
-    ).draw();
+    // // draw the velocity
+    // const velocity = fruit.velocity;
+    // new Arrow(
+    //   "green",
+    //   fruit.position,
+    //   fruit.position.add(velocity.multiply(10))
+    // ).draw();
   }
 }
 class FruitFactory {

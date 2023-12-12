@@ -16,15 +16,15 @@ function draw() {
   arrows.forEach((a) => a.draw());
   if (mouseIsPressed) {
     mouseVelocity = new Vector(mouseX, mouseY).subtract(lastMouse);
-    fruit[0].position = new Vector(mouseX, mouseY);
-    fruit[0].velocity = mouseVelocity.divide(2);
+    // fruit[0].position = new Vector(mouseX, mouseY);
+    // fruit[0].velocity = mouseVelocity.divide(2);
   }
   ghosts.forEach((g) => g.draw());
   lastMouse = new Vector(mouseX, mouseY);
 }
 
-function mouseIsPressed() {
-  // fruit.push(FruitFactory.random(mouseX, mouseY));
+function mousePressed() {
+  fruit.push(FruitFactory.random(mouseX, mouseY));
 }
 
 function createBoundaries() {
