@@ -6,7 +6,7 @@ class Apple extends Fruit {
   }
 
   draw() {
-    fill("red");
+    super.draw();
     noStroke();
     beginShape();
     this.boundingBox.forEach((p) => vertex(p.x, p.y));
