@@ -8,29 +8,50 @@ class Fruit extends Entity {
 
   constructor(x, y) {
     super(x, y);
+    this.atRest = false;
   }
-
   update(boundaries, fruit) {
-    this.position = this.position.add(this.velocity);
+    // Set initial color if at rest
+    this.color = this.atRest ? "green" : this.color;
 
-    let startMag = this.velocity.magnitude();
+    // Update position if not at rest
+    if (!this.atRest) {
+      this.position = this.position.add(this.velocity);
+    }
 
-    let onGround = false;
-    boundaries.forEach((boundary) => {
-      const overlap = calculateOverlap(this.boundingBox, boundary.points);
-      if (overlap.magnitude() < 1) return;
-      onGround = true;
-      this.position = this.position.add(overlap);
+    // Check for collision and calculate accumulated overlap
+    let accumulatedOverlap = new Vector(0, 0);
+    let onGround =
+      this.atRest ||
+      boundaries.some((boundary) => {
+        const overlap = calculateOverlap(this.boundingBox, boundary.points);
+        if (overlap.magnitude() > 0.1) {
+          accumulatedOverlap = accumulatedOverlap.add(overlap);
+          return true; // On ground if overlap is significant
+        }
+      });
 
-      this.velocity = reflect(this.velocity, overlap.normalize());
-      this.velocity = this.velocity.multiply(0.6);
-    });
-    if (!onGround) this.velocity = this.velocity.add(Fruit.G);
+    // Handle collision response
+    if (!this.atRest && accumulatedOverlap.magnitude() > 0.3) {
+      this.position = this.position.add(accumulatedOverlap);
+      this.velocity = reflect(
+        this.velocity,
+        accumulatedOverlap.normalize()
+      ).multiply(0.7);
+    }
 
+    // Update atRest status and velocity
+    if (onGround) {
+      if (this.velocity.magnitude() < 0.2) {
+        this.atRest = true;
+        this.velocity = new Vector(0, 0);
+      }
+    } else {
+      this.velocity = this.velocity.add(Fruit.G);
+    }
+
+    // Apply terminal velocity and update position
     this.velocity = this.velocity.max(this.terminalVelocity);
-
-    // this.velocity = this.velocity.min(0.3);
-
     this.position = this.position.add(this.velocity);
   }
 

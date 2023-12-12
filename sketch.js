@@ -44,7 +44,6 @@ function draw() {
       f.position.x = width;
     }
   });
-  console.log(fruit.map((f) => f.velocity.magnitude()));
   arrows.forEach((a) => a.draw());
 }
 
