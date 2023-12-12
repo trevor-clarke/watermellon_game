@@ -82,3 +82,34 @@ fruit.forEach((otherFruit) => {
     otherFruit.velocity = v2Final;
   }
 });
+// boundaries.push(
+//   new Boundary(
+//     new Vector(0, height / 2),
+//     new Vector(0, height / 1.5),
+//     new Vector(width / 2, height / 1.5)
+//   )
+// );
+// boundaries.push(
+//   new Boundary(
+//     new Vector(width / 2, height / 1.5),
+//     new Vector(width, height / 1.5),
+//     new Vector(width, height / 2)
+//   )
+// );
+// boundaries.push(
+//   new Boundary(
+//     new Vector(10, 10),
+//     new Vector(width, height / 1.5),
+//     new Vector(width, height / 2)
+//   )
+// );
+// // make a straight ground near the bottom
+// boundaries.push(
+//   new Boundary(
+//     new Vector(0, height),
+//     new Vector(width, height),
+//     new Vector(width, height - 10)
+//   )
+// );
+
+//create a little box with no top

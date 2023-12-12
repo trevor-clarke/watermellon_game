@@ -6,7 +6,11 @@ class Apple extends Fruit {
     this.drawStrategy = new AppleDrawStrategy();
   }
   get boundingBox() {
-    return getCircularBoundingBox(this.position.x, this.position.y, this.size);
+    return getCircularBoundingBox(
+      this.position.x,
+      this.position.y,
+      this.size
+    ).reverse();
   }
 }
 
@@ -20,12 +24,33 @@ class AppleDrawStrategy extends DrawStrategy {
     fill(fruit.color);
     noStroke();
     beginShape();
-    fruit.boundingBox.forEach((p) => vertex(p.x, p.y));
+    const points = fruit.boundingBox;
+    points.forEach((p) => vertex(p.x, p.y));
     endShape(CLOSE);
+
+    const axes = getAxes(points);
+    const centers = getCenterOfEachEdge(points);
+    axes.forEach((axis, i) => {
+      const center = centers[i];
+      const arrow = new Arrow("blue", center, center.add(axis.multiply(10)));
+      arrow.draw();
+    });
+
+    // draw the velocity
+    const velocity = fruit.velocity;
+    new Arrow(
+      "green",
+      fruit.position,
+      fruit.position.add(velocity.multiply(10))
+    ).draw();
   }
 }
 class FruitFactory {
   static types = [Apple];
+
+  static create(x, y, type) {
+    return new type(x, y);
+  }
 
   static random(x, y) {
     const type =

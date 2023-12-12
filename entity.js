@@ -84,8 +84,24 @@ function calculateOverlap(polygonA, polygonB) {
     }
   }
 
-  let mtvDirection = new Vector(smallestAxis.x, smallestAxis.y).normalize();
-  return mtvDirection.multiply(minimumOverlap);
+  // Calculate the vector between the centers of the two polygons
+  let d = calculateCenter(polygonB).subtract(calculateCenter(polygonA));
+
+  // If the dot product of this vector and the smallest axis is less than 0, reverse the axis
+  if (d.dot(smallestAxis) < 0) {
+    smallestAxis = smallestAxis.multiply(-1);
+  }
+
+  // Return the overlap vector
+  return smallestAxis.multiply(minimumOverlap);
+}
+
+function calculateCenter(polygon) {
+  let sum = polygon.reduce((acc, point) => {
+    return acc.add(point);
+  }, new Vector(0, 0));
+
+  return sum.divide(polygon.length);
 }
 
 function reflect(vel, normal) {
@@ -122,8 +138,8 @@ function getCircularBoundingBox(centerX, centerY, radius) {
   // approximate circle with 25 points
 
   let boundingBox = [];
-  for (let i = 0; i < 20; i++) {
-    let angle = (i / 20) * Math.PI * 2;
+  for (let i = 0; i < 3; i++) {
+    let angle = (i / 3) * Math.PI * 2;
     let x = centerX + radius * Math.cos(angle);
     let y = centerY + radius * Math.sin(angle);
     boundingBox.push(new Vector(x, y));
