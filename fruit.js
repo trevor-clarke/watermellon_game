@@ -3,10 +3,15 @@ class Fruit extends Entity {
 
   constructor(x, y) {
     super(x, y);
-    this.color = "red";
   }
 
   update(boundaries, fruit) {
+    this.arrow(Fruit.G.multiply(50), "red", "");
+    this.arrow(this.velocity.multiply(10), "red", "");
+
+    const kineticEnergyOfFruit =
+      0.5 * this.mass * this.velocity.magnitude() * this.velocity.magnitude();
+
     this.wrapAround();
     this.velocity.add_(Fruit.G).max_(this.terminalVelocity);
     this.position = this.position.add(this.velocity);
@@ -22,6 +27,8 @@ class Fruit extends Entity {
       const overlap = calculateOverlap(this.boundingBox, boundary.points);
       const overlapMagnitude = overlap.magnitude();
       if (overlapMagnitude > 0) {
+        this.arrow(overlap.multiply(1).negate(), "blue", "");
+
         this.position = this.position.subtract(overlap);
         this.velocity = this.velocity.reflect(overlap.normalize());
       }
@@ -35,6 +42,7 @@ class Fruit extends Entity {
       );
       const overlapMagnitude = overlap.magnitude();
       if (overlapMagnitude > 0.1) {
+        this.arrow(overlap.multiply(1).negate(), "blue", "");
         this.position = this.position.subtract(overlap);
         const { v1, v2 } = perfectlyElasticCollision(
           this.velocity,
@@ -55,8 +63,10 @@ class Fruit extends Entity {
     return this.boundingBox;
   }
 
-  arrow(endpoint, color) {
-    return new Arrow(color, this.position, this.position.add(endpoint));
+  arrow(endpoint, color, t) {
+    new Arrow(color, this.position, this.position.add(endpoint)).draw();
+    const textPos = this.position.add(endpoint);
+    text(t, textPos.x, textPos.y);
   }
 
   wrapAround() {
