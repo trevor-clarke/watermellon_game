@@ -6,8 +6,6 @@ function setup() {
   createCanvas(600, 600);
   createBoundaries();
   fruit.push(FruitFactory.create(100, 100, Apple));
-  fruit.push(FruitFactory.create(200, 100, Orange));
-  fruit.push(FruitFactory.create(300, 100, Watermelon));
 }
 
 function draw() {
@@ -28,16 +26,6 @@ function createBoundaries() {
         new Vector(50, 400),
         new Vector(250, 550),
         new Vector(0, 550),
-      ].reverse()
-    )
-  );
-  boundaries.push(
-    new Boundary(
-      ...[
-        new Vector(250, 550),
-        new Vector(350, 550),
-        new Vector(550, 400),
-        new Vector(300, 400),
       ].reverse()
     )
   );

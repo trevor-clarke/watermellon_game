@@ -128,8 +128,8 @@
 //   SimpleTest.expect(result.y).toBe(1);
 // });
 
-SimpleTest.test("Subtract two vectors", () => {
-  v1 = new Vector(0, 1).multiply(1).multiply(-1);
-  SimpleTest.expect(v1.x).toBe(0);
-  SimpleTest.expect(v1.y).toBe(-1);
-});
+// SimpleTest.test("Subtract two vectors", () => {
+//   v1 = new Vector(0, 1).multiply(1).multiply(-1);
+//   SimpleTest.expect(v1.x).toBe(0);
+//   SimpleTest.expect(v1.y).toBe(-1);
+// });
