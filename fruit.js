@@ -1,5 +1,5 @@
 class Fruit extends Entity {
-  static G = new Vector(0, 9.8 / 5 / 2);
+  static G = new Vector(0, 9.8 / 5 / 2 / 2);
 
   constructor(x, y) {
     super(x, y);
@@ -16,12 +16,10 @@ class Fruit extends Entity {
     this.velocity.add_(Fruit.G).max_(this.terminalVelocity);
     this.position = this.position.add(this.velocity);
 
-    const dragForce = this.velocity
-      .normalize()
-      .negate()
-      .multiply(this.size / 110)
-      .multiply(0.8);
-    this.velocity.add_(dragForce);
+    const dragDirection = this.velocity.normalize().negate();
+    const dragVelocity = dragDirection.multiply(this.size * 0.01);
+    this.velocity = this.velocity.add(dragVelocity);
+    this.arrow(dragVelocity.multiply(50), "blue", "");
 
     boundaries.forEach((boundary) => {
       const overlap = calculateOverlap(this.boundingBox, boundary.points);
