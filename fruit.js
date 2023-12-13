@@ -1,5 +1,5 @@
 class Fruit extends Entity {
-  static G = new Vector(0, 0.5);
+  static G = new Vector(0, 9.8 / 10);
 
   constructor(x, y) {
     super(x, y);
@@ -10,27 +10,63 @@ class Fruit extends Entity {
     this.position.add_(this.velocity);
     this.wrapAround();
 
-    let [isHit, overlap] = this.boundaryOverlap(boundaries);
+    this.arrow(this.velocity, "green", "velocity");
 
-    if (isHit) {
+    const news = new Vector(0, 0);
+    news.add_(Fruit.G);
+    this.arrow(Fruit.G, "green", "gravity");
+
+    for (let i = 0; i < boundaries.length; i++) {
+      const boundary = boundaries[i];
+      let [isHit, overlap] = this.boundaryOverlap([boundary]);
       this.position.subtract_(overlap);
-      this.velocity = reflect(
-        this.velocity.multiply_(0.5),
-        overlap.normalize()
-      );
-      this.reduceVelocity(new Vector(0.1, 0.1));
+
+      if (isHit) {
+        const normal = overlap.negate().normalize();
+        const newsNormal = news.dot(normal);
+        const frictionDirection = this.velocity.negate().normalize();
+        const friction = frictionDirection.multiply(newsNormal);
+        friction.multiply_(boundary.friction);
+        news.subtract_(friction);
+
+        this.arrow(friction.negate(), "blue", "friction");
+        this.arrow(
+          normal,
+          "blue",
+          "normal" + overlap.negate().normalize().magnitude()
+        );
+        this.arrow(news, "green", "velocity");
+        // calc friction force on fruit from boundary
+
+        this.velocity = reflect(
+          this.velocity.multiply_(0.9),
+          overlap.normalize()
+        );
+
+        this.reduceVelocity(new Vector(0.1, 0.1));
+      }
     }
 
-    this.velocity.add_(Fruit.G);
-    this.velocity.max_(this.terminalVelocity);
+    this.velocity.add_(news);
+
+    // this.reduceVelocity(new Vector(0.2, 0.2));
+
+    // this.velocity.max_(this.terminalVelocity);
   }
 
   get points() {
     return this.boundingBox;
   }
 
-  arrow(endpoint, color) {
-    return new Arrow(color, this.position, this.position.add(endpoint));
+  arrow(endpoint, color, label = "") {
+    const arrowEnd = this.position.add(endpoint.multiply(50));
+    new Arrow(color, this.position, arrowEnd).draw();
+    //draw the label halfway between the fruit and the arrow
+
+    push();
+    fill(color);
+    text(label, arrowEnd.x + 5, arrowEnd.y);
+    pop();
   }
 
   boundaryOverlap(boundaries) {
@@ -85,7 +121,7 @@ class Fruit extends Entity {
     this.drawStrategy.draw(this);
   }
   get mass() {
-    return this.size * this.size * Math.PI;
+    return this.size * 2;
   }
   get terminalVelocity() {
     return this.mass;

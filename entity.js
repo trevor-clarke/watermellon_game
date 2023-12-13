@@ -38,6 +38,10 @@ function projectPolygon(axis, polygon) {
   return { min, max };
 }
 
+function project(vector1, vector2) {
+  return vector1.dot(vector2) / vector2.magnitude();
+}
+
 function getCenterOfEachEdge(polygon) {
   let centers = [];
   for (let i = 0; i < polygon.length; i++) {

@@ -4,10 +4,9 @@ let arrows = [];
 let ghosts = [];
 var lastMouse = new Vector(0, 0);
 function setup() {
-  createCanvas(300, 600);
+  createCanvas(500, 600);
   createBoundaries();
   fruit.push(FruitFactory.random(150, 100));
-  // fruit.push(FruitFactory.random(200, 100));
 }
 
 function draw() {
@@ -30,44 +29,23 @@ function draw() {
 // }
 
 function createBoundaries() {
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(50, 400),
-  //     new Vector(100, 400),
-  //     new Vector(100, 550),
-  //     new Vector(50, 550)
-  //   )
-  // );
-
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(200, 400),
-  //     new Vector(250, 400),
-  //     new Vector(250, 550),
-  //     new Vector(200, 550)
-  //   )
-  // );
-
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(50, 500),
-  //     new Vector(200, 500),
-  //     new Vector(200, 550),
-  //     new Vector(50, 550)
-  //   )
-  // );
-
-  // make a cool structure
-
-  // boundaries.push(new Boundary(...getCircularBoundingBox(150, 500, 50)));
-
-  //ramp
   boundaries.push(
     new Boundary(
-      new Vector(0, 400),
-      new Vector(50, 400),
-      new Vector(250, 550),
-      new Vector(0, 550)
+      0.3,
+      new Vector(100, 400),
+      new Vector(150, 400),
+      new Vector(350, 550),
+      new Vector(100, 550)
+    )
+  );
+  boundaries.push(
+    //floor
+    new Boundary(
+      0.4,
+      new Vector(0, 550),
+      new Vector(width, 550),
+      new Vector(width, height),
+      new Vector(0, height)
     )
   );
 }

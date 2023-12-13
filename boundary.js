@@ -1,6 +1,7 @@
 class Boundary {
-  constructor(...points) {
+  constructor(friction, ...points) {
     this.points = points;
+    this.friction = friction;
   }
 
   draw() {
