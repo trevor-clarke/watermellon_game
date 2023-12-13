@@ -1,7 +1,6 @@
 let boundaries = [];
 let fruit = [];
 let arrows = [];
-let ghosts = [];
 var lastMouse = new Vector(0, 0);
 function setup() {
   createCanvas(600, 600);
@@ -46,7 +45,7 @@ function createBoundaries() {
 function mousePressed() {
   if (mouseButton !== RIGHT) return;
   fruit.push(FruitFactory.random(mouseX, mouseY));
-  fruit[fruit.length - 1].velocity = mouseVelocity;
+  fruit[fruit.length - 1].velocity = mouseVelocity();
 }
 
 function updateAndDrawFruits() {

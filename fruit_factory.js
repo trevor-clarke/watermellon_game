@@ -74,7 +74,7 @@ class AppleDrawStrategy extends DrawStrategy {
     // display the mass of the fruit
     textSize(20);
     fill("black");
-    text(fruit.mass, fruit.position.x, fruit.position.y);
+    // text(fruit.mass, fruit.position.x, fruit.position.y);
 
     //this.drawAxes(points);
   }

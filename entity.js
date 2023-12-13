@@ -50,67 +50,12 @@ function getCenterOfEachEdge(polygon) {
   return centers;
 }
 
-function getAxes(polygon) {
-  let axes = [];
-  for (let i = 0; i < polygon.length; i++) {
-    let p1 = polygon[i];
-    let p2 = polygon[(i + 1) % polygon.length];
-    let edge = new Vector(p2.x - p1.x, p2.y - p1.y);
-    let normal = new Vector(-edge.y, edge.x).normalize();
-    axes.push(normal);
-  }
-
-  return axes;
-}
-
-function calculateOverlap(polygonA, polygonB) {
-  let minimumOverlap = Infinity;
-  let smallestAxis = null;
-  let allAxes = [...getAxes(polygonA), ...getAxes(polygonB)];
-
-  for (let axis of allAxes) {
-    let projectionA = projectPolygon(axis, polygonA);
-    let projectionB = projectPolygon(axis, polygonB);
-
-    let overlap =
-      Math.min(projectionA.max, projectionB.max) -
-      Math.max(projectionA.min, projectionB.min);
-
-    if (overlap <= 0) {
-      return new Vector(0, 0);
-    } else if (overlap < minimumOverlap) {
-      minimumOverlap = overlap;
-      smallestAxis = axis;
-    }
-  }
-
-  // Calculate the vector between the centers of the two polygons
-  let d = calculateCenter(polygonB).subtract(calculateCenter(polygonA));
-
-  // If the dot product of this vector and the smallest axis is less than 0, reverse the axis
-  if (d.dot(smallestAxis) < 0) {
-    smallestAxis = smallestAxis.multiply(-1);
-  }
-
-  // Return the overlap vector
-  return smallestAxis.multiply(minimumOverlap);
-}
-
 function calculateCenter(polygon) {
   let sum = polygon.reduce((acc, point) => {
     return acc.add(point);
   }, new Vector(0, 0));
 
   return sum.divide(polygon.length);
-}
-
-function reflect(vel, normal) {
-  // Ensure the normal is a unit vector
-  normal = normal.normalize();
-
-  // Calculate the reflection using the formula R = V - 2*(V·N)*N
-  const dotProduct = vel.dot(normal);
-  return vel.subtract(normal.multiply(2 * dotProduct));
 }
 
 function getRectangularBoundingBox(centerX, centerY, width, height) {
@@ -135,8 +80,6 @@ function getRectangularBoundingBox(centerX, centerY, width, height) {
 }
 
 function getCircularBoundingBox(centerX, centerY, radius) {
-  // approximate circle with 25 points
-
   let boundingBox = [];
   for (let i = 0; i < 30; i++) {
     let angle = (i / 30) * Math.PI * 2;
@@ -145,20 +88,4 @@ function getCircularBoundingBox(centerX, centerY, radius) {
     boundingBox.push(new Vector(x, y));
   }
   return boundingBox;
-}
-
-function drawPolygon(polygon) {
-  box = polygon;
-  push();
-  strokeWeight(1);
-  stroke("green");
-  for (let i = 0; i < box.length; i++) {
-    line(
-      box[i].x,
-      box[i].y,
-      box[(i + 1) % box.length].x,
-      box[(i + 1) % box.length].y
-    );
-  }
-  pop();
 }
