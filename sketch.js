@@ -4,76 +4,49 @@ let arrows = [];
 let ghosts = [];
 var lastMouse = new Vector(0, 0);
 function setup() {
-  createCanvas(300, 600);
+  createCanvas(600, 600);
   createBoundaries();
-  fruit.push(FruitFactory.random(150, 100));
-  // fruit.push(FruitFactory.random(200, 100));
+  fruit.push(FruitFactory.create(100, 100, Apple));
+  fruit.push(FruitFactory.create(200, 100, Orange));
+  fruit.push(FruitFactory.create(300, 100, Watermelon));
 }
 
 function draw() {
   background(250);
-  drawBoundaries();
+  boundaries.forEach((b) => b.draw());
   updateAndDrawFruits();
   arrows.forEach((a) => a.draw());
-  if (mouseIsPressed) {
-    mouseVelocity = new Vector(mouseX, mouseY).subtract(lastMouse);
-    fruit[0].position = new Vector(mouseX, mouseY);
-    fruit[0].velocity = mouseVelocity.divide(2);
-  }
-  ghosts.forEach((g) => g.draw());
-  lastMouse = new Vector(mouseX, mouseY);
+  allowSelectingTheClosestFruit();
+  trackMouseLocation();
+  displayFps();
 }
 
-// function mousePressed() {
-//   fruit.push(FruitFactory.random(mouseX, mouseY));
-//   fruit[fruit.length - 1].velocity = mouseVelocity;
-// }
-
 function createBoundaries() {
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(50, 400),
-  //     new Vector(100, 400),
-  //     new Vector(100, 550),
-  //     new Vector(50, 550)
-  //   )
-  // );
-
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(200, 400),
-  //     new Vector(250, 400),
-  //     new Vector(250, 550),
-  //     new Vector(200, 550)
-  //   )
-  // );
-
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(50, 500),
-  //     new Vector(200, 500),
-  //     new Vector(200, 550),
-  //     new Vector(50, 550)
-  //   )
-  // );
-
-  // make a cool structure
-
-  // boundaries.push(new Boundary(...getCircularBoundingBox(150, 500, 50)));
-
-  //ramp
   boundaries.push(
     new Boundary(
-      new Vector(0, 400),
-      new Vector(50, 400),
-      new Vector(250, 550),
-      new Vector(0, 550)
+      ...[
+        new Vector(0, 400),
+        new Vector(50, 400),
+        new Vector(250, 550),
+        new Vector(0, 550),
+      ].reverse()
+    )
+  );
+  boundaries.push(
+    new Boundary(
+      ...[
+        new Vector(250, 550),
+        new Vector(350, 550),
+        new Vector(550, 400),
+        new Vector(300, 400),
+      ].reverse()
     )
   );
 }
-
-function drawBoundaries() {
-  boundaries.forEach((b) => b.draw());
+function mousePressed() {
+  if (mouseButton !== RIGHT) return;
+  fruit.push(FruitFactory.random(mouseX, mouseY));
+  fruit[fruit.length - 1].velocity = mouseVelocity;
 }
 
 function updateAndDrawFruits() {
@@ -81,4 +54,37 @@ function updateAndDrawFruits() {
     f.draw();
     f.update(boundaries, fruit);
   });
+}
+
+function displayFps() {
+  fill(0);
+  textSize(11);
+  text(frameRate().toFixed(0), 10, 20);
+}
+
+function trackMouseLocation() {
+  lastMouse = new Vector(mouseX, mouseY);
+}
+
+function mouseVelocity() {
+  return new Vector(mouseX, mouseY).subtract(lastMouse);
+}
+
+function allowSelectingTheClosestFruit() {
+  if (mouseIsPressed) {
+    // find the closest fruit
+    const closestFruit = fruit.reduce(
+      (acc, f) => {
+        const distance = f.position.distance(new Vector(mouseX, mouseY));
+        if (distance < acc.distance) {
+          return { distance, fruit: f };
+        }
+        return acc;
+      },
+      { distance: Infinity, fruit: null }
+    ).fruit;
+
+    closestFruit.position = new Vector(mouseX, mouseY);
+    closestFruit.velocity = mouseVelocity().divide(2);
+  }
 }

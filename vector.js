@@ -123,6 +123,10 @@ class Vector {
     return this.multiply_(-1);
   }
 
+  reflect(normal) {
+    return this.subtract(normal.multiply(2 * this.dot(normal)));
+  }
+
   equals(other) {
     if (other.components.length !== this.components.length) {
       return false;
