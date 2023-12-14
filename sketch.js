@@ -7,11 +7,13 @@ function setup() {
   createCanvas(600, 500);
   createBoundaries();
 
-  for (var i = 0; i < 50; i++)
+  for (var i = 0; i < 9; i++)
     fruit.push(
       FruitFactory.create(random(0, width), random(0, height), Orange)
     );
-  // fruit.push(FruitFactory.create(100, 100, Watermelon));
+  fruit.push(FruitFactory.create(100, 100, Watermelon));
+  for (var i = 0; i < 15; i++) fruit.push(FruitFactory.create(100, 100, Apple));
+
   frameRate(60);
 }
 

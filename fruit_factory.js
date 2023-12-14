@@ -1,3 +1,13 @@
+class Apple extends Fruit {
+  constructor(x, y) {
+    super(x, y);
+    this.size = 27;
+    //pastel red
+    this.color = "#ff6961";
+    this.polygon = new Polygon(...Polygon.generateCircle(0, 0, this.size, 5));
+  }
+}
+
 class Watermelon extends Fruit {
   constructor(x, y) {
     super(x, y);
@@ -13,6 +23,21 @@ class Orange extends Fruit {
     this.size = 22;
     this.color = "orange";
     this.polygon = new Polygon(...Polygon.generateCircle(0, 0, this.size, 3));
+  }
+}
+
+class Banana extends Fruit {
+  constructor(x, y) {
+    super(x, y);
+    this.size = 20;
+    // banana yellow
+    this.color = "#ffe135";
+    this.polygon = new Polygon(
+      new Vector(0, 0),
+      new Vector(0, this.size * 3),
+      new Vector(this.size, this.size * 3),
+      new Vector(this.size, 0)
+    );
   }
 }
 

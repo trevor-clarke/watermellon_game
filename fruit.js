@@ -1,6 +1,6 @@
 class Fruit extends Entity {
-  static restitution = 0.5;
-  static boundaryRestitution = 0.95;
+  static restitution = 0.7;
+  static boundaryRestitution = 0.7;
 
   get hitbox() {
     return this.polygon.at(this.position);
