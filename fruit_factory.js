@@ -6,6 +6,9 @@ class Apple extends Fruit {
     this.color = "#ff6961";
     this.polygon = new Polygon(...Polygon.generateCircle(0, 0, this.size, 5));
   }
+  get mass() {
+    return 2;
+  }
 }
 
 class Watermelon extends Fruit {
@@ -15,6 +18,9 @@ class Watermelon extends Fruit {
     this.color = "green";
     this.polygon = new Polygon(...Polygon.generateCircle(0, 0, this.size, 12));
   }
+  get mass() {
+    return 3;
+  }
 }
 
 class Orange extends Fruit {
@@ -23,6 +29,10 @@ class Orange extends Fruit {
     this.size = 22;
     this.color = "orange";
     this.polygon = new Polygon(...Polygon.generateCircle(0, 0, this.size, 3));
+  }
+
+  get mass() {
+    return 1;
   }
 }
 
@@ -38,6 +48,10 @@ class Banana extends Fruit {
       new Vector(this.size, this.size * 3),
       new Vector(this.size, 0)
     );
+  }
+
+  get mass() {
+    return 3;
   }
 }
 

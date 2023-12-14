@@ -4,6 +4,8 @@ class Boundary {
     this.polygon = new Polygon(...points);
   }
 
+  update(objects) {}
+
   get hitbox() {
     return this.polygon;
   }

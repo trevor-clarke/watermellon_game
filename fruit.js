@@ -1,6 +1,6 @@
 class Fruit extends Entity {
-  static restitution = 0.3;
-  static boundaryRestitution = 0.5;
+  static restitution = 0.95;
+  static boundaryRestitution = 0.95;
 
   constructor(x, y) {
     super(x, y);
@@ -32,19 +32,18 @@ class Fruit extends Entity {
   }
 
   calculateOverlapWithObjects(allObjects) {
-    // const subset = closestObjects(allObjects);
     let objectsOverlap = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 7; i++) {
       let currentOverlap = new Vector(0, 0);
       allObjects.forEach((object) => {
         if (!this.isCloseEnoughTo(object)) return;
         const overlap = this.hitbox.calculateOverlap(object.hitbox);
-        if (overlap.magnitude() > 0.1) {
+        if (overlap.magnitude() > 0) {
           objectsOverlap.push([object, overlap]);
           currentOverlap = currentOverlap.add(overlap);
         }
       });
-      if (currentOverlap.magnitude() <= 0.1) break;
+      if (currentOverlap.magnitude() <= 0.2) break;
       this.position.subtract_(currentOverlap);
     }
     return objectsOverlap;
@@ -59,22 +58,24 @@ class Fruit extends Entity {
   }
 
   handleCollisions(objectsOverlap, totalDisplacement) {
+    const totalDisplacementMagnitude = totalDisplacement.magnitude();
     for (let [object, overlap] of objectsOverlap) {
       const displacementProportion =
-        overlap.magnitude() / totalDisplacement.magnitude();
+        overlap.magnitude() / totalDisplacementMagnitude;
       if (object instanceof Boundary) {
         this.handleBoundaryCollision(overlap, displacementProportion);
       } else if (object instanceof Fruit) {
         this.handleFruitCollision(object, displacementProportion);
+        object.velocity.min_(0.5);
       }
     }
+    this.velocity.min_(0.5);
   }
 
   handleBoundaryCollision(overlap, displacementProportion) {
-    const normal = overlap.normalize();
     this.velocity = Physics.reflectAndScaleVelocity(
       this.velocity,
-      normal,
+      overlap.normalize(),
       Fruit.boundaryRestitution * displacementProportion
     );
   }
@@ -93,26 +94,38 @@ class Fruit extends Entity {
     object.velocity = v2;
   }
 
-  update(boundaries, fruit) {
+  update(objects) {
     this.velocity = this.velocity.add(Physics.gravity);
     this.externalForce.forEach((f) => this.velocity.add_(f));
     this.externalForce = [];
+    this.velocity.max_(this.terminalVelocity);
+    this.velocity.subtract_(this.calcAirResistance());
     this.wrapAround(0.5);
     this.position.add_(this.velocity);
     let originalPosition = this.position.dup;
 
-    const allObjects = [...boundaries, ...fruit.filter((f) => f !== this)];
-    const objectsOverlap = this.calculateOverlapWithObjects(allObjects);
+    const objectsOverlap = this.calculateOverlapWithObjects(
+      objects.filter((o) => o !== this)
+    );
+
     const displacement = this.position.subtract(originalPosition);
 
-    if (displacement.magnitude() < 0.1) return;
-
+    if (displacement.magnitude() < 0.01) return;
     const totalDisplacement = objectsOverlap.reduce(
       (acc, [_, overlap]) => acc.add(overlap),
       new Vector(0, 0)
     );
-
     this.handleCollisions(objectsOverlap, totalDisplacement);
+    // this.arrow(this.velocity.multiply(10), "blue", "");
+  }
+
+  calcAirResistance() {
+    const speed = this.velocity.magnitude();
+    const drag = this.velocity
+      .multiply(-1)
+      .normalize()
+      .multiply(speed * speed);
+    return drag.multiply(0.0005 * (this.mass / 14));
   }
 
   arrow(endpoint, color, t) {
@@ -122,16 +135,10 @@ class Fruit extends Entity {
   }
 
   wrapAround(energyLoss) {
-    const originalPosition = this.position.dup;
     const p = this.position;
     p.y = p.y > height ? -this.size : p.y;
     p.x = p.x > width ? 0 : p.x < 0 ? width : p.x;
 
-    // if (p.x !== originalPosition.x) {
-    //   this.velocity.x *= energyLoss;
-    // }
-    if (p.y !== originalPosition.y) {
-      this.velocity.y *= energyLoss;
-    }
+    this.velocity.max_(this.terminalVelocity / 3);
   }
 }

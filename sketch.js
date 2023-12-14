@@ -1,9 +1,10 @@
-let boundaries = [];
-let fruit = [];
-let arrows = [];
+objects = [];
 var lastMouse = new Vector(0, 0);
 let clickedFruit = [];
+let frameRates = [];
+let renderTimes = [];
 let mouseForceRadius = 100;
+let start_time = performance.now();
 
 function preload() {
   document.oncontextmenu = function () {
@@ -16,50 +17,55 @@ function setup() {
 
   createBoundaries();
 
-  for (var i = 0; i < 5; i++)
-    fruit.push(
-      FruitFactory.create(random(0, width), random(0, height), Orange)
+  for (var i = 0; i < 3; i++) {
+    objects.push(
+      FruitFactory.create(random(150, width - 250), random(-150, 0), Apple)
     );
-  // fruit.push(FruitFactory.create(100, 100, Watermelon));
-  // for (var i = 0; i < 6; i++) fruit.push(FruitFactory.create(100, 100, Apple));
+    objects.push(
+      FruitFactory.create(random(150, width - 250), random(-150, 0), Orange)
+    );
+    objects.push(
+      FruitFactory.create(random(150, width - 250), random(-150, 0), Watermelon)
+    );
+  }
 
-  // frameRate(60);
+  // startTest();
 }
-
-let loopDurations = [];
-let start_time, end_time;
 
 function draw() {
   start_time = performance.now();
   background(250);
   allowSelectingTheClosestFruit();
 
-  fruit.forEach((f) => {
+  objects.forEach((f) => {
     f.draw();
-    f.update(boundaries, fruit);
+    f.update(objects);
   });
-  boundaries.forEach((b) => b.draw());
 
-  arrows.forEach((a) => a.draw());
   trackMouseLocation();
-  loopDurations.push(performance.now() - start_time);
+
   textAlign(LEFT);
-  const renderTime = (
-    loopDurations.reduce((acc, d) => acc + d, 0) / loopDurations.length
-  ).toFixed(4);
+
+  renderTime = claculatePerformance();
 
   displayInfo(
     ["fps", frameRate().toFixed(2)],
     ["render time", renderTime],
-    ["fruit", fruit.length],
-    ["bounds", boundaries.length],
-    ["arrows", arrows.length]
+    ["objects", objects.length]
   );
+
+  frameRates.push(frameRate());
+  renderTimes.push(int(renderTime));
+}
+
+function claculatePerformance() {
+  return (performance.now() - start_time).toFixed(4);
 }
 
 function keyPressed() {
   if (keyCode === 32) {
-    fruit.forEach((f) => {
+    object.forEach((f) => {
+      if (!(f instanceof Fruit)) return;
       f.velocity = new Vector(0, 0);
       f.position = new Vector(random(0, width), random(0, height));
     });
@@ -67,7 +73,7 @@ function keyPressed() {
 }
 
 function createBoundaries() {
-  boundaries.push(
+  objects.push(
     new Boundary(
       new Vector(100, 200),
       new Vector(100, 400),
@@ -76,7 +82,7 @@ function createBoundaries() {
     )
   );
 
-  boundaries.push(
+  objects.push(
     new Boundary(
       new Vector(400, 200),
       new Vector(400, 400),
@@ -85,7 +91,7 @@ function createBoundaries() {
     )
   );
 
-  boundaries.push(
+  objects.push(
     new Boundary(
       new Vector(70, 400),
       new Vector(70, 430),
@@ -93,37 +99,6 @@ function createBoundaries() {
       new Vector(430, 400)
     )
   );
-
-  //big ass ramp:
-
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(0, 100),
-  //     new Vector((width / 3) * 2, height),
-  //     new Vector(0, height)
-  //   )
-  // );
-  // // smaller ass ramp on right side
-
-  // boundaries.push(
-  //   new Boundary(
-  //     new Vector(width, 150),
-  //     new Vector(width, 300),
-  //     new Vector(width - 150, 300)
-  //   )
-  // );
-
-  // for (var i = 0; i < 5; i++)
-  //   boundaries.push(
-  //     new Boundary(
-  //       ...Polygon.generateCircle(
-  //         random(0, width),
-  //         random(0, height),
-  //         random(20, 30),
-  //         6
-  //       )
-  //     )
-  //   );
 }
 
 function mouseReleased() {
@@ -135,8 +110,8 @@ function mouseReleased() {
 }
 function mousePressed() {
   if (mouseButton == RIGHT && frameRate() > 40) {
-    fruit.push(FruitFactory.random(mouseX, mouseY));
-    fruit[fruit.length - 1].velocity = mouseVelocity();
+    objects.push(FruitFactory.random(mouseX, mouseY));
+    objects[objects.length - 1].velocity = mouseVelocity();
   }
 
   if (mouseButton == LEFT) {
@@ -174,40 +149,25 @@ function allowSelectingTheClosestFruit() {
   }
 }
 
-function findClosesFruit(x, y) {
-  const closestFruit = fruit.reduce(
-    (acc, f) => {
-      const distance = f.position.distance(new Vector(x, y));
-      if (distance < acc.distance) {
-        return { distance, fruit: f };
-      }
-      return acc;
-    },
-    { distance: Infinity, fruit: null }
-  ).fruit;
-
-  return closestFruit;
-}
-
 findFruitWithinRadius = (x, y, radius) => {
-  return fruit.filter((f) => {
+  return objects.filter((f) => {
+    if (!(f instanceof Fruit)) return false;
     const distance = f.position.distance(new Vector(x, y));
     return distance < radius;
   });
 };
 
 function displayInfo(...items) {
-  const w = width;
-  const t = w - 55;
-  const e = t / items.length;
+  const e = (width - 55) / items.length;
   const a = min(e, 70);
+  push();
   fill(50);
-  //items are an array including a title and value
+
   items.forEach((item, i) => {
     textSize(12);
-
     text(item[1], a * i + 10, 15);
     textSize(10);
     text(item[0], a * i + 10, 25);
   });
+  pop();
 }

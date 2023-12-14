@@ -1,0 +1,48 @@
+  //big ass ramp:
+
+  // boundaries.push(
+  //   new Boundary(
+  //     new Vector(0, 100),
+  //     new Vector((width / 3) * 2, height),
+  //     new Vector(0, height)
+  //   )
+  // );
+  // // smaller ass ramp on right side
+
+  // boundaries.push(
+  //   new Boundary(
+  //     new Vector(width, 150),
+  //     new Vector(width, 300),
+  //     new Vector(width - 150, 300)
+  //   )
+  // );
+
+  // for (var i = 0; i < 5; i++)
+  //   boundaries.push(
+  //     new Boundary(
+  //       ...Polygon.generateCircle(
+  //         random(0, width),
+  //         random(0, height),
+  //         random(20, 30),
+  //         6
+  //       )
+  //     )
+  //   );
+
+
+
+
+// function findClosesFruit(x, y) {
+//   const closestFruit = fruit.reduce(
+//     (acc, f) => {
+//       const distance = f.position.distance(new Vector(x, y));
+//       if (distance < acc.distance) {
+//         return { distance, fruit: f };
+//       }
+//       return acc;
+//     },
+//     { distance: Infinity, fruit: null }
+//   ).fruit;
+
+//   return closestFruit;
+// }
