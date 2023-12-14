@@ -5,7 +5,7 @@ var lastMouse = new Vector(0, 0);
 function setup() {
   createCanvas(600, 600);
   createBoundaries();
-  fruit.push(FruitFactory.create(100, 100, Apple));
+  fruit.push(FruitFactory.create(100, 100, Watermelon));
 }
 
 function draw() {
@@ -29,9 +29,26 @@ function createBoundaries() {
       ].reverse()
     )
   );
+  //reflection of above
+  boundaries.push(
+    new Boundary(
+      ...[
+        new Vector(600, 400),
+        new Vector(550, 400),
+        new Vector(350, 550),
+        new Vector(600, 550),
+      ].reverse()
+    )
+  );
+
+  boundaries.push(
+    new Boundary(...getCircularBoundingBox(width / 2, 200, 50, 6))
+  );
 }
+
 function mousePressed() {
   if (mouseButton !== RIGHT) return;
+  if (frameRate() < 40) return;
   fruit.push(FruitFactory.random(mouseX, mouseY));
   fruit[fruit.length - 1].velocity = mouseVelocity();
 }

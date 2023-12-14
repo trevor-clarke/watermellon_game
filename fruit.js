@@ -2,8 +2,19 @@ class Fruit extends Entity {
   static G = new Vector(0, 9.81 / 31);
   static restitution = 0.9;
 
-  getBoundingBoxAtPosition(position) {
-    return getCircularBoundingBox(position.x, position.y, this.size);
+  draw() {
+    push();
+    fill(this.color);
+    beginShape();
+    this.polygon.at(this.position).points.forEach((p) => vertex(p.x, p.y));
+    endShape(CLOSE);
+    pop();
+
+    // display the mass in white text in the center of the fruit
+    fill(255);
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    text(this.mass.toFixed(0), this.x, this.y);
   }
 
   // Update the position and velocity of the object
@@ -11,11 +22,6 @@ class Fruit extends Entity {
     this.velocity = this.velocity.add(Fruit.G);
     this.wrapAround();
     this.position.add_(this.velocity);
-  }
-
-  // Get all objects excluding the current one
-  getAllObjects(boundaries, fruit) {
-    return [...boundaries, ...fruit.filter((f) => f !== this)];
   }
 
   // Calculate the overlap between objects
@@ -26,7 +32,7 @@ class Fruit extends Entity {
     for (let i = 0; i < 5; i++) {
       currentOverlap = allObjects.reduce((acc, object) => {
         const overlap = calculateOverlap(
-          this.getBoundingBoxAtPosition(this.position),
+          this.polygon.at(this.position).points,
           object.points
         );
         if (overlap.magnitude() > 0.1) {
@@ -99,7 +105,9 @@ class Fruit extends Entity {
     this.updatePositionAndVelocity();
     let originalPosition = this.position.dup;
 
-    const allObjects = this.getAllObjects(boundaries, fruit);
+    //TOD: Pass these in and remove itself at the beginning
+    const allObjects = [...boundaries, ...fruit.filter((f) => f !== this)];
+
     const objectsOverlap = this.calculateOverlapWithObjects(allObjects);
 
     const displacement = this.position.subtract(originalPosition);
@@ -111,7 +119,7 @@ class Fruit extends Entity {
   }
 
   get points() {
-    return this.boundingBox;
+    return this.polygon.at(this.position).points;
   }
 
   arrow(endpoint, color, t) {
@@ -127,7 +135,7 @@ class Fruit extends Entity {
   }
 
   get mass() {
-    return (this.size * this.size * this.size) / 100;
+    return (this.size * this.size) / 100;
   }
   get terminalVelocity() {
     return 40;

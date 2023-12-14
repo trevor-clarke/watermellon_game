@@ -27,17 +27,6 @@ class Entity {
   }
 }
 
-function projectPolygon(axis, polygon) {
-  let min = Infinity;
-  let max = -Infinity;
-  for (const point of polygon) {
-    let dotProduct = point.x * axis.x + point.y * axis.y;
-    if (dotProduct < min) min = dotProduct;
-    if (dotProduct > max) max = dotProduct;
-  }
-  return { min, max };
-}
-
 function getCenterOfEachEdge(polygon) {
   let centers = [];
   for (let i = 0; i < polygon.length; i++) {
@@ -79,10 +68,10 @@ function getRectangularBoundingBox(centerX, centerY, width, height) {
   ];
 }
 
-function getCircularBoundingBox(centerX, centerY, radius) {
+function getCircularBoundingBox(centerX, centerY, radius, points = 30) {
   let boundingBox = [];
-  for (let i = 0; i < 30; i++) {
-    let angle = (i / 30) * Math.PI * 2;
+  for (let i = 0; i < points; i++) {
+    let angle = (i / points) * Math.PI * 2;
     let x = centerX + radius * Math.cos(angle);
     let y = centerY + radius * Math.sin(angle);
     boundingBox.push(new Vector(x, y));

@@ -132,3 +132,30 @@ for (let i = 0; i < fruit.length; i++) {
   this.velocity = v1;
   f.velocity = v2;
 }
+
+class AppleDrawStrategy extends DrawStrategy {
+  draw(fruit) {
+    fill(fruit.color);
+    noStroke();
+    beginShape();
+    const points = fruit.boundingBox;
+    points.forEach((p) => vertex(p.x, p.y));
+    endShape(CLOSE);
+    // display the mass of the fruit
+    textSize(20);
+    fill("black");
+    // text(fruit.mass, fruit.position.x, fruit.position.y);
+
+    //this.drawAxes(points);
+  }
+
+  drawAxes(points) {
+    const axes = getAxes(points);
+    const centers = getCenterOfEachEdge(points);
+    axes.forEach((axis, i) => {
+      const center = centers[i];
+      const arrow = new Arrow("blue", center, center.add(axis.multiply(10)));
+      arrow.draw();
+    });
+  }
+}
