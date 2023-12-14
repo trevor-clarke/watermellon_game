@@ -26,6 +26,10 @@ class Polygon {
     return this.add(vector);
   }
 
+  atFast(vector) {
+    return this.points.map((p) => p.add(vector));
+  }
+
   //find minimum circle to contain the polygon
   get boundingRadius() {
     if (!this.boundingRadius_) {

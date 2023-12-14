@@ -1,6 +1,6 @@
 class Fruit extends Entity {
-  static restitution = 0.95;
-  static boundaryRestitution = 0.95;
+  static restitution = 0.8;
+  static boundaryRestitution = 0.5;
 
   constructor(x, y) {
     super(x, y);
@@ -20,28 +20,31 @@ class Fruit extends Entity {
     beginShape();
     this.polygon.at(this.position).points.forEach((p) => vertex(p.x, p.y));
     endShape(CLOSE);
-    // fill(255);
-    // textSize(12);
-    // textAlign(CENTER, CENTER);
-    // text(this.mass.toFixed(0), this.x, this.y);
     pop();
   }
 
   calculateOverlapWithObjects(allObjects) {
-    let objectsOverlap = [];
-    for (let i = 0; i < 6; i++) {
-      let currentOverlap = new Vector(0, 0);
-      allObjects.forEach((object) => {
-        if (!this.isCloseEnoughTo(object)) return;
+    let objectsOverlap = new Map();
+
+    for (let i = 0; i < 7; i++) {
+      let currentOverlap = allObjects.reduce((accumulatedOverlap, object) => {
+        if (!this.isCloseEnoughTo(object)) return accumulatedOverlap;
+
         const overlap = this.hitbox.calculateOverlap(object.hitbox);
         if (overlap.magnitude() > 0) {
-          objectsOverlap.push([object, overlap]);
-          currentOverlap = currentOverlap.add(overlap);
+          objectsOverlap.set(
+            object,
+            (objectsOverlap.get(object) || new Vector(0, 0)).add(overlap)
+          );
+          this.position.subtract_(overlap);
+          return accumulatedOverlap.add(overlap);
         }
-      });
-      if (currentOverlap.magnitude() <= 0.15) break;
-      this.position.subtract_(currentOverlap);
+        return accumulatedOverlap;
+      }, new Vector(0, 0));
+
+      if (currentOverlap.magnitude() <= 0.2) break;
     }
+
     return objectsOverlap;
   }
 
@@ -53,11 +56,9 @@ class Fruit extends Entity {
     return c < a + b;
   }
 
-  handleCollisions(objectsOverlap, totalDisplacement) {
-    const totalDisplacementMagnitude = totalDisplacement.magnitude();
+  handleCollisions(objectsOverlap, distanceMoved) {
     for (let [object, overlap] of objectsOverlap) {
-      const displacementProportion =
-        overlap.magnitude() / totalDisplacementMagnitude;
+      const displacementProportion = overlap.magnitude() / distanceMoved;
       if (object instanceof Boundary) {
         this.handleBoundaryCollision(overlap, displacementProportion);
       } else if (object instanceof Fruit) {
@@ -65,6 +66,19 @@ class Fruit extends Entity {
         object.velocity.min_(0.5);
       }
     }
+    this.velocity.min_(0.5);
+  }
+
+  handleCollisionWithObject(object, overlap, distanceMoved) {
+    const displacementProportion = overlap.magnitude() / distanceMoved;
+
+    if (object instanceof Boundary) {
+      this.handleBoundaryCollision(overlap, displacementProportion);
+    } else if (object instanceof Fruit) {
+      this.handleFruitCollision(object, displacementProportion);
+      object.velocity.min_(0.5);
+    }
+
     this.velocity.min_(0.5);
   }
 
@@ -99,19 +113,21 @@ class Fruit extends Entity {
     this.position.add_(this.velocity);
     let originalPosition = this.position.dup;
 
-    const objectsOverlap = this.calculateOverlapWithObjects(
-      objects.filter((o) => o !== this)
-    );
+    const filtered = objects.filter((o) => o !== this);
 
-    const displacement = this.position.subtract(originalPosition);
+    const objectsOverlap = this.calculateOverlapWithObjects(filtered);
 
-    if (displacement.magnitude() < 0.01) return;
-    const totalDisplacement = objectsOverlap.reduce(
-      (acc, [_, overlap]) => acc.add(overlap),
-      new Vector(0, 0)
-    );
-    this.handleCollisions(objectsOverlap, totalDisplacement);
-    // this.arrow(this.velocity.multiply(10), "blue", "");
+    // If there's no significant movement, return early
+    const distanceMoved = originalPosition.subtract(this.position).magnitude();
+    if (distanceMoved < 0.01) return;
+
+    // Iterate through each object and its overlap in the map
+    objectsOverlap.forEach((overlap, object) => {
+      // Handle each collision based on the object and its cumulative overlap
+      this.handleCollisionWithObject(object, overlap, distanceMoved);
+    });
+
+    this.arrow(this.velocity.multiply(10), "blue", "");
   }
 
   calcAirResistance() {

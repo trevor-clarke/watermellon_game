@@ -17,7 +17,7 @@ function setup() {
 
   createBoundaries();
 
-  for (var i = 0; i < 3; i++) {
+  for (var i = 0; i < 1; i++) {
     objects.push(
       FruitFactory.create(random(150, width - 250), random(-150, 0), Apple)
     );
@@ -36,17 +36,12 @@ function draw() {
   start_time = performance.now();
   background(250);
   allowSelectingTheClosestFruit();
-
   objects.forEach((f) => {
     f.draw();
     f.update(objects);
   });
-
   trackMouseLocation();
-
-  textAlign(LEFT);
-
-  renderTime = claculatePerformance();
+  renderTime = calculatePerformance();
 
   displayInfo(
     ["fps", frameRate().toFixed(2)],
@@ -54,11 +49,11 @@ function draw() {
     ["objects", objects.length]
   );
 
-  frameRates.push(frameRate());
-  renderTimes.push(int(renderTime));
+  // frameRates.push(frameRate());
+  // renderTimes.push(int(renderTime));
 }
 
-function claculatePerformance() {
+function calculatePerformance() {
   return (performance.now() - start_time).toFixed(4);
 }
 
@@ -145,6 +140,7 @@ function allowSelectingTheClosestFruit() {
       // scale the force by the distance to the mouse so the force is 0 when the mouse is far away
 
       f.externalForce.push(toMouse);
+      break;
     }
   }
 }
@@ -161,6 +157,8 @@ function displayInfo(...items) {
   const e = (width - 55) / items.length;
   const a = min(e, 70);
   push();
+  textAlign(LEFT);
+
   fill(50);
 
   items.forEach((item, i) => {
