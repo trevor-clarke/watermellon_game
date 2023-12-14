@@ -92,7 +92,7 @@ class Polygon {
   }
 
   // Both the circle and rectangle method should probably return a Polygon
-  static generateCircle(centerX, centerY, radius, points = 30) {
+  static generateCircle(centerX, centerY, radius, points = 5) {
     let boundingBox = [];
     for (let i = 0; i < points; i++) {
       let angle = (i / points) * Math.PI * 2;

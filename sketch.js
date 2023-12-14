@@ -2,16 +2,21 @@ let boundaries = [];
 let fruit = [];
 let arrows = [];
 var lastMouse = new Vector(0, 0);
+
 function setup() {
   createCanvas(600, 600);
   createBoundaries();
   fruit.push(FruitFactory.create(100, 100, Watermelon));
+  frameRate(60);
 }
 
 function draw() {
   background(250);
   boundaries.forEach((b) => b.draw());
-  updateAndDrawFruits();
+  fruit.forEach((f) => {
+    f.draw();
+    f.update(boundaries, fruit);
+  });
   arrows.forEach((a) => a.draw());
   allowSelectingTheClosestFruit();
   trackMouseLocation();
@@ -21,28 +26,29 @@ function draw() {
 function createBoundaries() {
   boundaries.push(
     new Boundary(
-      ...[
-        new Vector(0, 400),
-        new Vector(50, 400),
-        new Vector(250, 550),
-        new Vector(0, 550),
-      ].reverse()
-    )
-  );
-  //reflection of above
-  boundaries.push(
-    new Boundary(
-      ...[
-        new Vector(600, 400),
-        new Vector(550, 400),
-        new Vector(350, 550),
-        new Vector(600, 550),
-      ].reverse()
+      new Vector(100, 200),
+      new Vector(100, 400),
+      new Vector(70, 400),
+      new Vector(70, 200)
     )
   );
 
   boundaries.push(
-    new Boundary(...Polygon.generateCircle(width / 2, 200, 50, 6))
+    new Boundary(
+      new Vector(400, 200),
+      new Vector(400, 400),
+      new Vector(430, 400),
+      new Vector(430, 200)
+    )
+  );
+
+  boundaries.push(
+    new Boundary(
+      new Vector(70, 400),
+      new Vector(70, 430),
+      new Vector(430, 430),
+      new Vector(430, 400)
+    )
   );
 }
 
@@ -51,13 +57,6 @@ function mousePressed() {
   if (frameRate() < 40) return;
   fruit.push(FruitFactory.random(mouseX, mouseY));
   fruit[fruit.length - 1].velocity = mouseVelocity();
-}
-
-function updateAndDrawFruits() {
-  fruit.forEach((f) => {
-    f.draw();
-    f.update(boundaries, fruit);
-  });
 }
 
 function displayFps() {

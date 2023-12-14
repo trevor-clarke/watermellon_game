@@ -40,4 +40,18 @@ class Physics {
     const scaledVelocity = reflectedVelocity.multiply(scale);
     return scaledVelocity;
   }
+
+  static elasticCollision(v1, m1, v2, m2, e) {
+    const v1f = v1
+      .multiply(e * m1 - m2)
+      .add(v2.multiply(2 * m2))
+      .divide(e * m1 + m2);
+
+    const v2f = v2
+      .multiply(e * m2 - m1)
+      .add(v1.multiply(2 * m1))
+      .divide(e * m2 + m1);
+
+    return { v1: v1f, v2: v2f };
+  }
 }

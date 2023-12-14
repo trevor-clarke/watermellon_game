@@ -1,12 +1,12 @@
 class Fruit extends Entity {
-  static restitution = 0.9;
+  static restitution = 0.5;
 
   get hitbox() {
     return this.polygon.at(this.position);
   }
 
   get mass() {
-    return (this.size * this.size) / 100;
+    return (this.size * this.size) / 200;
   }
 
   get terminalVelocity() {
@@ -26,15 +26,9 @@ class Fruit extends Entity {
     text(this.mass.toFixed(0), this.x, this.y);
   }
 
-  updatePositionAndVelocity() {
-    this.velocity = this.velocity.add(Physics.gravity);
-    this.wrapAround();
-    this.position.add_(this.velocity);
-  }
-
   calculateOverlapWithObjects(allObjects) {
     let objectsOverlap = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       let currentOverlap = new Vector(0, 0);
       allObjects.forEach((object) => {
         const overlap = this.hitbox.calculateOverlap(object.hitbox);
@@ -66,7 +60,7 @@ class Fruit extends Entity {
     this.velocity = Physics.reflectAndScaleVelocity(
       this.velocity,
       normal,
-      0.9 * displacementProportion
+      Fruit.restitution * displacementProportion
     );
   }
 
@@ -78,14 +72,16 @@ class Fruit extends Entity {
       this.mass,
       object.mass,
       normal,
-      displacementProportion
+      displacementProportion * Fruit.restitution
     );
     this.velocity = v1;
     object.velocity = v2;
   }
 
   update(boundaries, fruit) {
-    this.updatePositionAndVelocity();
+    this.velocity = this.velocity.add(Physics.gravity);
+    this.wrapAround();
+    this.position.add_(this.velocity);
     let originalPosition = this.position.dup;
     const allObjects = [...boundaries, ...fruit.filter((f) => f !== this)];
     const objectsOverlap = this.calculateOverlapWithObjects(allObjects);
