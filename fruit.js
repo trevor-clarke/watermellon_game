@@ -1,6 +1,6 @@
 class Fruit extends Entity {
-  static restitution = 0.95;
-  static boundaryRestitution = 0.95;
+  static restitution = 0.9;
+  static boundaryRestitution = 0.9;
 
   constructor(x, y) {
     super(x, y);
@@ -10,12 +10,8 @@ class Fruit extends Entity {
     return this.polygon.at(this.position);
   }
 
-  get mass() {
-    return (this.size * this.size) / 200;
-  }
-
   get terminalVelocity() {
-    return 40;
+    return 60;
   }
 
   draw() {
@@ -24,16 +20,16 @@ class Fruit extends Entity {
     beginShape();
     this.polygon.at(this.position).points.forEach((p) => vertex(p.x, p.y));
     endShape(CLOSE);
+    // fill(255);
+    // textSize(12);
+    // textAlign(CENTER, CENTER);
+    // text(this.mass.toFixed(0), this.x, this.y);
     pop();
-    fill(255);
-    textSize(12);
-    textAlign(CENTER, CENTER);
-    text(this.mass.toFixed(0), this.x, this.y);
   }
 
   calculateOverlapWithObjects(allObjects) {
     let objectsOverlap = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 6; i++) {
       let currentOverlap = new Vector(0, 0);
       allObjects.forEach((object) => {
         if (!this.isCloseEnoughTo(object)) return;
@@ -43,7 +39,7 @@ class Fruit extends Entity {
           currentOverlap = currentOverlap.add(overlap);
         }
       });
-      if (currentOverlap.magnitude() <= 0.2) break;
+      if (currentOverlap.magnitude() <= 0.15) break;
       this.position.subtract_(currentOverlap);
     }
     return objectsOverlap;
@@ -98,9 +94,8 @@ class Fruit extends Entity {
     this.velocity = this.velocity.add(Physics.gravity);
     this.externalForce.forEach((f) => this.velocity.add_(f));
     this.externalForce = [];
-    this.velocity.max_(this.terminalVelocity);
-    this.velocity.subtract_(this.calcAirResistance());
     this.wrapAround(0.5);
+    this.velocity.max_(this.terminalVelocity);
     this.position.add_(this.velocity);
     let originalPosition = this.position.dup;
 
