@@ -1,7 +1,11 @@
 class Fruit extends Entity {
-  static restitution = 0.7;
-  static boundaryRestitution = 0.7;
+  static restitution = 0.3;
+  static boundaryRestitution = 0.5;
 
+  constructor(x, y) {
+    super(x, y);
+    this.externalForce = [];
+  }
   get hitbox() {
     return this.polygon.at(this.position);
   }
@@ -91,6 +95,8 @@ class Fruit extends Entity {
 
   update(boundaries, fruit) {
     this.velocity = this.velocity.add(Physics.gravity);
+    this.externalForce.forEach((f) => this.velocity.add_(f));
+    this.externalForce = [];
     this.wrapAround(0.5);
     this.position.add_(this.velocity);
     let originalPosition = this.position.dup;
@@ -121,9 +127,9 @@ class Fruit extends Entity {
     p.y = p.y > height ? -this.size : p.y;
     p.x = p.x > width ? 0 : p.x < 0 ? width : p.x;
 
-    if (p.x !== originalPosition.x) {
-      this.velocity.x *= energyLoss;
-    }
+    // if (p.x !== originalPosition.x) {
+    //   this.velocity.x *= energyLoss;
+    // }
     if (p.y !== originalPosition.y) {
       this.velocity.y *= energyLoss;
     }
