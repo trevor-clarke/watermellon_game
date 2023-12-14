@@ -1,6 +1,6 @@
 class Fruit extends Entity {
-  static restitution = 0.9;
-  static boundaryRestitution = 0.9;
+  static restitution = 0.95;
+  static boundaryRestitution = 0.95;
 
   constructor(x, y) {
     super(x, y);
@@ -94,8 +94,8 @@ class Fruit extends Entity {
     this.velocity = this.velocity.add(Physics.gravity);
     this.externalForce.forEach((f) => this.velocity.add_(f));
     this.externalForce = [];
-    this.wrapAround(0.5);
     this.velocity.max_(this.terminalVelocity);
+    this.wrapAround(0.5);
     this.position.add_(this.velocity);
     let originalPosition = this.position.dup;
 
