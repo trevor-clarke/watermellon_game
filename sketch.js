@@ -42,7 +42,7 @@ function createBoundaries() {
   );
 
   boundaries.push(
-    new Boundary(...getCircularBoundingBox(width / 2, 200, 50, 6))
+    new Boundary(...Polygon.generateCircle(width / 2, 200, 50, 6))
   );
 }
 

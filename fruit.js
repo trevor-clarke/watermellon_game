@@ -1,6 +1,9 @@
 class Fruit extends Entity {
-  static G = new Vector(0, 9.81 / 31);
   static restitution = 0.9;
+
+  get hitbox() {
+    return this.polygon.at(this.position);
+  }
 
   draw() {
     push();
@@ -10,7 +13,6 @@ class Fruit extends Entity {
     endShape(CLOSE);
     pop();
 
-    // display the mass in white text in the center of the fruit
     fill(255);
     textSize(12);
     textAlign(CENTER, CENTER);
@@ -19,7 +21,7 @@ class Fruit extends Entity {
 
   // Update the position and velocity of the object
   updatePositionAndVelocity() {
-    this.velocity = this.velocity.add(Fruit.G);
+    this.velocity = this.velocity.add(Physics.gravity);
     this.wrapAround();
     this.position.add_(this.velocity);
   }
@@ -31,10 +33,7 @@ class Fruit extends Entity {
 
     for (let i = 0; i < 5; i++) {
       currentOverlap = allObjects.reduce((acc, object) => {
-        const overlap = calculateOverlap(
-          this.polygon.at(this.position).points,
-          object.points
-        );
+        const overlap = this.hitbox.calculateOverlap(object.hitbox);
         if (overlap.magnitude() > 0.1) {
           objectsOverlap.push([object, overlap]);
         }
@@ -48,17 +47,6 @@ class Fruit extends Entity {
     }
 
     return objectsOverlap;
-  }
-
-  // Calculate the total displacement
-  calculateTotalDisplacement(objectsOverlap) {
-    let totalDisplacement = new Vector(0, 0);
-
-    for (let [object, overlap] of objectsOverlap) {
-      totalDisplacement = totalDisplacement.add(overlap);
-    }
-
-    return totalDisplacement;
   }
 
   // Handle collisions with other objects
@@ -113,13 +101,12 @@ class Fruit extends Entity {
     const displacement = this.position.subtract(originalPosition);
     if (displacement.magnitude() < 0.1) return;
 
-    const totalDisplacement = this.calculateTotalDisplacement(objectsOverlap);
+    const totalDisplacement = objectsOverlap.reduce(
+      (acc, [_, overlap]) => acc.add(overlap),
+      new Vector(0, 0)
+    );
 
     this.handleCollisions(objectsOverlap, totalDisplacement);
-  }
-
-  get points() {
-    return this.polygon.at(this.position).points;
   }
 
   arrow(endpoint, color, t) {
@@ -140,80 +127,4 @@ class Fruit extends Entity {
   get terminalVelocity() {
     return 40;
   }
-}
-
-function perfectlyElasticCollision(v1, m1, v2, m2) {
-  const v1f = v1
-    .multiply(m1 - m2)
-    .add(v2.multiply(2 * m2))
-    .divide(m1 + m2);
-
-  const v2f = v2
-    .multiply(m2 - m1)
-    .add(v1.multiply(2 * m1))
-    .divide(m1 + m2);
-
-  return { v1: v1f, v2: v2f };
-}
-
-function calculateOverlap(polygonA, polygonB) {
-  let minimumOverlap = Infinity;
-  let smallestAxis = null;
-  let allAxes = [...getAxes(polygonA), ...getAxes(polygonB)];
-
-  for (let axis of allAxes) {
-    let { min: minA, max: maxA } = projectPolygon(axis, polygonA);
-    let { min: minB, max: maxB } = projectPolygon(axis, polygonB);
-
-    let overlap = Math.min(maxA, maxB) - Math.max(minA, minB);
-
-    if (overlap <= 0) return new Vector(0, 0);
-    if (overlap < minimumOverlap) {
-      minimumOverlap = overlap;
-      smallestAxis = axis;
-    }
-  }
-
-  let d = calculateCenter(polygonB).subtract(calculateCenter(polygonA));
-  if (d.dot(smallestAxis) < 0) smallestAxis = smallestAxis.multiply(-1);
-
-  return smallestAxis.multiply(minimumOverlap);
-}
-
-function projectPolygon(axis, polygon) {
-  let min = Infinity;
-  let max = -Infinity;
-
-  for (let i = 0; i < polygon.length; i++) {
-    let vertex = polygon[i];
-    let projection = axis.dot(vertex); // Take the dot product of the axis and vertex
-
-    min = Math.min(min, projection);
-    max = Math.max(max, projection);
-  }
-
-  return { min, max };
-}
-
-function getAxes(polygon) {
-  let axes = [];
-
-  for (let i = 0; i < polygon.length; i++) {
-    // Get the current vertex and the next vertex (or the first vertex if the current vertex is the last)
-    let p1 = polygon[i];
-    let p2 = polygon[i + 1 === polygon.length ? 0 : i + 1];
-
-    // Calculate the edge vector
-    let edge = p2.subtract(p1);
-
-    // Calculate the normal to the edge (which is a perpendicular vector)
-    let normal = new Vector(-edge.y, edge.x);
-
-    // Normalize the normal
-    normal = normal.normalize();
-
-    axes.push(normal);
-  }
-
-  return axes;
 }

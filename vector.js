@@ -40,7 +40,7 @@ class Vector {
     } else if (operands.length == 1 && typeof operands[0] === "number") {
       operandComponents = new Array(this.components.length).fill(operands[0]);
     } else {
-      throw new Error("Invalid operand type or dimension");
+      throw new Error("Invalid operand type or dimension", operation, operands);
     }
 
     const result = new Vector(

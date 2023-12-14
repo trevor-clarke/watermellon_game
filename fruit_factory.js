@@ -3,7 +3,7 @@ class Watermelon extends Fruit {
     super(x, y);
     this.size = 37;
     this.color = "green";
-    this.polygon = new Polygon(...getCircularBoundingBox(0, 0, this.size));
+    this.polygon = new Polygon(...Polygon.generateCircle(0, 0, this.size));
   }
 }
 
@@ -12,7 +12,7 @@ class Orange extends Fruit {
     super(x, y);
     this.size = 22;
     this.color = "orange";
-    this.polygon = new Polygon(...getCircularBoundingBox(0, 0, this.size));
+    this.polygon = new Polygon(...Polygon.generateCircle(0, 0, this.size));
   }
 }
 

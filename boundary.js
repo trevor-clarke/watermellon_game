@@ -1,6 +1,11 @@
 class Boundary {
   constructor(...points) {
     this.points = points;
+    this.polygon = new Polygon(...points);
+  }
+
+  get hitbox() {
+    return this.polygon;
   }
 
   draw() {
@@ -10,9 +15,8 @@ class Boundary {
     this.points.forEach((p) => vertex(p.x, p.y));
     endShape(CLOSE);
 
-    // draw arrows for axes pointing out of each edge
-    const axes = getAxes(this.points);
-    const centers = getCenterOfEachEdge(this.points);
+    const axes = this.polygon.axes;
+    const centers = this.polygon.getCenterOfEachEdge();
     axes.forEach((axis, i) => {
       const center = centers[i];
       const arrow = new Arrow("red", center, center.add(axis.multiply(20)));
