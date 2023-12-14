@@ -26,6 +26,21 @@ class Polygon {
     return this.add(vector);
   }
 
+  //find minimum circle to contain the polygon
+  get boundingRadius() {
+    if (!this.boundingRadius_) {
+      let center = this.centerPoint;
+      let radius = 0;
+      for (let point of this.points) {
+        let distance = point.distance(center);
+        if (distance > radius) radius = distance;
+      }
+      this.boundingRadius_ = radius;
+    }
+
+    return this.boundingRadius_;
+  }
+
   calculateOverlap(polygonB) {
     let minimumOverlap = Infinity;
     let smallestAxis = null;
@@ -51,17 +66,20 @@ class Polygon {
   }
 
   get axes() {
-    let axes = [];
-    for (let i = 0; i < this.points.length; i++) {
-      let p1 = this.points[i];
-      let p2 = this.points[i + 1 === this.points.length ? 0 : i + 1];
-      let edge = p2.subtract(p1);
-      let normal = new Vector(-edge.y, edge.x);
-      normal = normal.normalize();
+    if (!this.axes_) {
+      let axes = [];
+      for (let i = 0; i < this.points.length; i++) {
+        let p1 = this.points[i];
+        let p2 = this.points[i + 1 === this.points.length ? 0 : i + 1];
+        let edge = p2.subtract(p1);
+        let normal = new Vector(-edge.y, edge.x);
+        normal = normal.normalize();
 
-      axes.push(normal);
+        axes.push(normal);
+      }
+      this.axes_ = axes;
     }
-    return axes;
+    return this.axes_;
   }
 
   project(axis) {
@@ -80,15 +98,17 @@ class Polygon {
   }
 
   getCenterOfEachEdge() {
-    let centers = [];
-    for (let i = 0; i < this.points.length; i++) {
-      let p1 = this.points[i];
-      let p2 = this.points[(i + 1) % this.points.length];
-      let center = new Vector((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
-      centers.push(center);
+    if (!this.centersOfEachEdge) {
+      let centers = [];
+      for (let i = 0; i < this.points.length; i++) {
+        let p1 = this.points[i];
+        let p2 = this.points[(i + 1) % this.points.length];
+        let center = new Vector((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+        centers.push(center);
+      }
+      this.centersOfEachEdge = centers;
     }
-
-    return centers;
+    return this.centersOfEachEdge;
   }
 
   // Both the circle and rectangle method should probably return a Polygon

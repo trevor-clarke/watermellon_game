@@ -8,6 +8,10 @@ class Boundary {
     return this.polygon;
   }
 
+  get position() {
+    return this.polygon.centerPoint;
+  }
+
   draw() {
     fill(220, 200, 200);
     noStroke();
@@ -15,12 +19,12 @@ class Boundary {
     this.points.forEach((p) => vertex(p.x, p.y));
     endShape(CLOSE);
 
-    const axes = this.polygon.axes;
-    const centers = this.polygon.getCenterOfEachEdge();
-    axes.forEach((axis, i) => {
-      const center = centers[i];
-      const arrow = new Arrow("red", center, center.add(axis.multiply(20)));
-      arrow.draw();
-    });
+    // const axes = this.polygon.axes;
+    // const centers = this.polygon.getCenterOfEachEdge();
+    // axes.forEach((axis, i) => {
+    //   const center = centers[i];
+    //   const arrow = new Arrow("blue", center, center.add(axis.multiply(10)));
+    //   arrow.draw();
+    // });
   }
 }
